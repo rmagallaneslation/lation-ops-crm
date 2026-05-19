@@ -1,112 +1,84 @@
 import { NavLink } from 'react-router-dom'
 import {
   LayoutDashboard,
-  TrendingUp,
   Building2,
-  UserCheck,
-  Calendar,
+  KanbanSquare,
+  Users,
+  Briefcase,
+  CalendarCheck2,
   ClipboardList,
-  BarChart2,
+  BarChart3,
+  Activity,
+  Settings,
 } from 'lucide-react'
+import { cn } from '../../lib/utils'
 import { getInitials } from '../../lib/utils'
 
-const navItems = [
+const NAV = [
   { to: '/', label: 'Dashboard', icon: LayoutDashboard, end: true },
-  { to: '/prospects', label: 'Pipeline', icon: TrendingUp, end: false },
-  { to: '/clients', label: 'Clients', icon: Building2, end: false },
-  { to: '/candidates', label: 'Candidates', icon: UserCheck, end: false },
-  { to: '/interviews', label: 'Interviews', icon: Calendar, end: false },
-  { to: '/scorecards', label: 'Scorecards', icon: ClipboardList, end: false },
-  { to: '/reports', label: 'Reports', icon: BarChart2, end: false },
+  { to: '/prospects', label: 'Prospects', icon: Building2 },
+  { to: '/pipeline', label: 'Pipeline', icon: KanbanSquare },
+  { to: '/clients', label: 'Clients', icon: Briefcase },
+  { to: '/hiring-needs', label: 'Hiring Needs', icon: ClipboardList },
+  { to: '/candidates', label: 'Candidates', icon: Users },
+  { to: '/interviews', label: 'Interviews', icon: CalendarCheck2 },
+  { to: '/scorecards', label: 'Scorecards', icon: BarChart3 },
+  { to: '/reports', label: 'Reports', icon: BarChart3 },
+  { to: '/activities', label: 'Activities', icon: Activity },
+  { to: '/settings', label: 'Settings', icon: Settings },
 ]
 
-const teamColors: Record<string, string> = {
-  R: 'bg-sky-600',
-  Re: 'bg-indigo-600',
-  S: 'bg-emerald-600',
-}
+const TEAM = ['Roberto', 'Reynaldo', 'Santiago'] as const
 
 export function Sidebar() {
-  const user = 'Roberto'
-  const initials = getInitials(user)
-  const avatarColor = teamColors[initials[0]] ?? 'bg-sky-600'
-
   return (
-    <aside className="fixed left-0 top-0 h-full w-60 bg-slate-900 flex flex-col z-40">
-      {/* Brand */}
-      <div className="px-5 py-4 border-b border-slate-800/80">
-        <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 bg-sky-600 rounded-lg flex items-center justify-center flex-shrink-0">
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 16 16"
-              fill="none"
-              className="text-white"
-            >
-              <path
-                d="M3 13L8 3L13 13M5.5 9.5H10.5"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </div>
-          <div>
-            <p className="text-white font-bold text-sm leading-none tracking-tight">
-              Lation
-            </p>
-            <p className="text-slate-500 text-xs mt-0.5">Operations CRM</p>
-          </div>
+    <aside className="fixed inset-y-0 left-0 z-30 flex w-60 flex-col bg-[#0F172A]">
+      {/* Logo */}
+      <div className="flex h-14 items-center gap-2.5 px-5 border-b border-white/10">
+        <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-orange-600 text-white text-xs font-bold">
+          L
         </div>
+        <span className="text-sm font-semibold text-white">Lation Ops</span>
       </div>
 
-      {/* Navigation */}
-      <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
-        <p className="px-3 text-slate-600 text-xs font-semibold uppercase tracking-wider mb-2">
-          Main
-        </p>
-        {navItems.map(({ to, label, icon: Icon, end }) => (
-          <NavLink
-            key={to}
-            to={to}
-            end={end}
-            className={({ isActive }) =>
-              `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 cursor-pointer group ${
-                isActive
-                  ? 'bg-sky-700 text-white'
-                  : 'text-slate-400 hover:text-slate-100 hover:bg-slate-800'
-              }`
-            }
-          >
-            {({ isActive }) => (
-              <>
-                <Icon
-                  size={17}
-                  className={`flex-shrink-0 transition-colors ${isActive ? 'text-white' : 'text-slate-500 group-hover:text-slate-300'}`}
-                />
+      {/* Nav */}
+      <nav className="flex-1 overflow-y-auto py-4 px-3">
+        <ul className="space-y-0.5">
+          {NAV.map(({ to, label, icon: Icon, end }) => (
+            <li key={to}>
+              <NavLink
+                to={to}
+                end={end}
+                className={({ isActive }) =>
+                  cn(
+                    'flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors',
+                    isActive
+                      ? 'bg-orange-600 text-white'
+                      : 'text-slate-400 hover:bg-white/5 hover:text-white'
+                  )
+                }
+              >
+                <Icon className="h-4 w-4 flex-shrink-0" />
                 {label}
-              </>
-            )}
-          </NavLink>
-        ))}
+              </NavLink>
+            </li>
+          ))}
+        </ul>
       </nav>
 
-      {/* User */}
-      <div className="px-3 pb-4 border-t border-slate-800/80 pt-3">
-        <div className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 transition-colors cursor-pointer">
-          <div
-            className={`w-7 h-7 rounded-full ${avatarColor} flex items-center justify-center flex-shrink-0`}
-          >
-            <span className="text-white text-xs font-semibold">{initials}</span>
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-slate-200 text-sm font-medium truncate leading-none">
-              {user}
-            </p>
-            <p className="text-slate-500 text-xs mt-0.5">Admin</p>
-          </div>
+      {/* Team */}
+      <div className="border-t border-white/10 px-4 py-4">
+        <p className="mb-2 text-xs font-medium text-slate-500 uppercase tracking-wider">Team</p>
+        <div className="flex gap-2">
+          {TEAM.map((name) => (
+            <div
+              key={name}
+              title={name}
+              className="flex h-7 w-7 items-center justify-center rounded-full bg-slate-700 text-xs font-medium text-slate-300"
+            >
+              {getInitials(name)}
+            </div>
+          ))}
         </div>
       </div>
     </aside>

@@ -1,138 +1,190 @@
 export type TeamMember = 'Roberto' | 'Reynaldo' | 'Santiago'
 
-export type ProspectStatus =
-  | 'new'
+export type CompanyStatus =
+  | 'new_lead'
+  | 'researching'
   | 'contacted'
-  | 'qualified'
-  | 'proposal'
+  | 'responded'
+  | 'discovery_scheduled'
+  | 'proposal_sent'
   | 'negotiation'
-  | 'won'
-  | 'lost'
+  | 'closed_won'
+  | 'closed_lost'
+  | 'nurturing'
 
-export interface Prospect {
+export type Priority = 'high' | 'medium' | 'low'
+
+export type Company = {
   id: string
-  companyName: string
+  name: string
   industry: string
   website?: string
-  contactName: string
-  contactTitle?: string
-  contactEmail: string
+  linkedin?: string
+  country: string
+  city?: string
+  companySize?: string
+  status: CompanyStatus
+  priority: Priority
+  contactName?: string
+  contactRole?: string
+  contactEmail?: string
   contactPhone?: string
-  status: ProspectStatus
-  estimatedValue?: number
-  notes: string
-  assignedTo: TeamMember
+  source?: string
+  painPoints?: string
+  hiringNeeds?: string
+  estimatedDealValue?: number
+  closeProbability?: number
+  notes?: string
+  nextFollowUpDate?: string
+  owner: TeamMember
   createdAt: string
   updatedAt: string
 }
 
-export type ClientStatus = 'active' | 'paused' | 'churned'
+export type Seniority = 'junior' | 'mid' | 'senior' | 'lead' | 'architect'
+export type EnglishLevel = 'basic' | 'intermediate' | 'advanced' | 'fluent'
+export type Urgency = 'low' | 'medium' | 'high' | 'critical'
+export type HiringNeedStatus = 'draft' | 'active' | 'paused' | 'closed'
 
-export interface Client {
+export type HiringNeed = {
   id: string
-  companyName: string
-  industry: string
-  contactName: string
-  contactTitle?: string
-  contactEmail: string
-  contactPhone?: string
-  status: ClientStatus
-  startDate: string
-  monthlyValue: number
-  assignedTo: TeamMember
-  notes: string
+  companyId: string
+  roleTitle: string
+  seniority: Seniority
+  stack: string[]
+  englishLevel?: EnglishLevel
+  urgency: Urgency
+  candidateVolume?: number
+  jobDescription?: string
+  mustHaveSkills: string[]
+  niceToHaveSkills: string[]
+  dealBreakers?: string[]
+  status: HiringNeedStatus
   createdAt: string
-}
-
-export type SeniorityLevel = 'junior' | 'mid' | 'senior' | 'lead' | 'principal'
-
-export interface HiringRole {
-  id: string
-  clientId: string
-  roleName: string
-  technology: string[]
-  level: SeniorityLevel
-  openPositions: number
-  filledPositions: number
-  interviewStages: string[]
-  scorecardId?: string
-  createdAt: string
+  updatedAt: string
 }
 
 export type CandidateStatus =
-  | 'screening'
-  | 'technical'
-  | 'system-design'
-  | 'final'
-  | 'offer'
-  | 'hired'
-  | 'rejected'
-  | 'withdrawn'
+  | 'received'
+  | 'pending_review'
+  | 'interview_scheduled'
+  | 'interview_completed'
+  | 'recommended'
+  | 'not_recommended'
+  | 'on_hold'
+  | 'sent_to_client'
 
-export interface Candidate {
+export type Candidate = {
   id: string
-  clientId: string
-  roleId: string
+  companyId: string
+  hiringNeedId: string
   name: string
-  email: string
+  email?: string
   phone?: string
-  linkedIn?: string
+  linkedin?: string
+  github?: string
+  location?: string
+  englishLevel?: EnglishLevel
+  seniority?: Seniority
+  mainStack: string[]
   status: CandidateStatus
-  notes: string
-  appliedAt: string
+  notes?: string
+  createdAt: string
   updatedAt: string
 }
 
+export type Interviewer = TeamMember | 'External'
 export type InterviewType =
-  | 'screening'
-  | 'technical'
-  | 'system-design'
-  | 'behavioral'
-  | 'final'
+  | 'technical_screening'
+  | 'live_coding'
+  | 'system_design'
+  | 'qa_evaluation'
+  | 'salesforce_evaluation'
+  | 'english_technical'
 
-export type InterviewStatus = 'scheduled' | 'completed' | 'cancelled' | 'no-show'
+export type InterviewStatus =
+  | 'to_schedule'
+  | 'scheduled'
+  | 'completed'
+  | 'no_show'
+  | 'cancelled'
+  | 'pending_scorecard'
+  | 'scorecard_completed'
+  | 'report_sent'
 
-export type Recommendation =
-  | 'strong-hire'
-  | 'hire'
-  | 'no-hire'
-  | 'strong-no-hire'
-
-export interface Interview {
+export type Interview = {
   id: string
+  companyId: string
   candidateId: string
-  clientId: string
-  roleId: string
-  interviewerName: string
-  scheduledAt: string
-  duration: number
-  type: InterviewType
+  hiringNeedId: string
+  interviewer: Interviewer
+  interviewType: InterviewType
+  scheduledAt?: string
+  meetingLink?: string
   status: InterviewStatus
-  recommendation?: Recommendation
-  overallScore?: number
   notes?: string
-  scorecardId?: string
+  createdAt: string
+  updatedAt: string
 }
 
-export interface ScorecardCriteria {
+export type RoleType =
+  | 'general'
+  | 'frontend'
+  | 'backend'
+  | 'qa_manual'
+  | 'qa_automation'
+  | 'salesforce'
+  | 'devops'
+  | 'data'
+  | 'tech_lead'
+
+export type FinalRecommendation =
+  | 'strong_hire'
+  | 'hire'
+  | 'consider'
+  | 'weak_consider'
+  | 'no_hire'
+
+export type ScorecardStatus = 'draft' | 'completed' | 'approved'
+
+export type Scorecard = {
   id: string
-  label: string
-  description?: string
-  weight: number
+  interviewId: string
+  candidateId: string
+  companyId: string
+  roleType: RoleType
+  technicalKnowledge: number
+  problemSolving: number
+  communication: number
+  seniorityAlignment: number
+  roleFit: number
+  clientReadiness: number
+  strengths: string
+  concerns: string
+  finalRecommendation: FinalRecommendation
+  summary: string
+  status: ScorecardStatus
+  createdAt: string
+  updatedAt: string
 }
 
-export interface ScorecardSection {
-  id: string
-  title: string
-  criteria: ScorecardCriteria[]
-}
+export type ActivityType =
+  | 'call'
+  | 'email'
+  | 'linkedin'
+  | 'whatsapp'
+  | 'meeting'
+  | 'proposal'
+  | 'note'
+  | 'follow_up'
 
-export interface Scorecard {
+export type Activity = {
   id: string
-  name: string
-  role: string
-  technology: string
-  level: SeniorityLevel
-  sections: ScorecardSection[]
+  companyId: string
+  type: ActivityType
+  owner: TeamMember
+  date: string
+  summary: string
+  nextStep?: string
   createdAt: string
 }
