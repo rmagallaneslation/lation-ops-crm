@@ -126,8 +126,8 @@ export function Reports() {
                         return (
                           <tr key={sc.id}>
                             <td className="py-2 font-medium text-slate-800 dark:text-slate-100">{cand?.name ?? '—'}</td>
-                            <td className="py-2 text-slate-500 capitalize">{sc.roleType.replace(/_/g, ' ')}</td>
-                            <td className="py-2 text-slate-700 font-medium">{avg.toFixed(1)}/5</td>
+                            <td className="py-2 text-slate-500 dark:text-slate-400 capitalize">{sc.roleType.replace(/_/g, ' ')}</td>
+                            <td className="py-2 text-slate-700 dark:text-slate-200 font-medium">{avg.toFixed(1)}/5</td>
                             <td className="py-2"><RecommendationBadge rec={sc.finalRecommendation} /></td>
                             <td className="py-2 text-slate-400 text-xs">{formatDate(sc.createdAt)}</td>
                           </tr>
@@ -157,8 +157,8 @@ export function Reports() {
                       {cands.map((c) => (
                         <tr key={c.id}>
                           <td className="py-2 font-medium text-slate-800 dark:text-slate-100">{c.name}</td>
-                          <td className="py-2 text-slate-500">{needMap[c.hiringNeedId]?.roleTitle ?? '—'}</td>
-                          <td className="py-2 text-xs text-slate-500">{c.mainStack.slice(0, 3).join(', ')}</td>
+                          <td className="py-2 text-slate-500 dark:text-slate-400">{needMap[c.hiringNeedId]?.roleTitle ?? '—'}</td>
+                          <td className="py-2 text-xs text-slate-500 dark:text-slate-400">{c.mainStack.slice(0, 3).join(', ')}</td>
                           <td className="py-2"><CandidateStatusBadge status={c.status} /></td>
                         </tr>
                       ))}
@@ -187,8 +187,8 @@ export function Reports() {
                       {ints.map((i) => (
                         <tr key={i.id}>
                           <td className="py-2 font-medium text-slate-800 dark:text-slate-100">{candidateMap[i.candidateId]?.name ?? '—'}</td>
-                          <td className="py-2 text-xs text-slate-500">{INTERVIEW_TYPE_LABELS[i.interviewType]}</td>
-                          <td className="py-2 text-slate-500">{i.interviewer}</td>
+                          <td className="py-2 text-xs text-slate-500 dark:text-slate-400">{INTERVIEW_TYPE_LABELS[i.interviewType]}</td>
+                          <td className="py-2 text-slate-500 dark:text-slate-400">{i.interviewer}</td>
                           <td className="py-2 text-xs text-slate-400">{i.scheduledAt ? formatDateTime(i.scheduledAt) : '—'}</td>
                           <td className="py-2"><InterviewStatusBadge status={i.status} /></td>
                         </tr>

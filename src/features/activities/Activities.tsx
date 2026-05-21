@@ -125,10 +125,10 @@ export function Activities() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
                     <ActivityTypeBadge type={a.type} />
-                    <span className="text-xs font-medium text-slate-600">{companyMap[a.companyId]?.name ?? '—'}</span>
+                    <span className="text-xs font-medium text-slate-600 dark:text-slate-300">{companyMap[a.companyId]?.name ?? '—'}</span>
                     <span className="text-xs text-slate-400">· {a.owner}</span>
                   </div>
-                  <p className="text-sm text-slate-800">{a.summary}</p>
+                  <p className="text-sm text-slate-800 dark:text-slate-100">{a.summary}</p>
                   {a.nextStep && (
                     <p className="text-xs text-orange-600 mt-1">Next: {a.nextStep}</p>
                   )}

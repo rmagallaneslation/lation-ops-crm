@@ -43,10 +43,10 @@ export function Settings() {
         <Card>
           <CardHeader><CardTitle>Data Management</CardTitle></CardHeader>
           <CardContent className="space-y-4">
-            <div className="flex items-center justify-between py-3 border-b border-slate-100">
+            <div className="flex items-center justify-between py-3 border-b border-slate-100 dark:border-slate-700">
               <div>
-                <p className="text-sm font-medium text-slate-800">Reset Demo Data</p>
-                <p className="text-xs text-slate-500">Resets all data to the original mock dataset. This cannot be undone.</p>
+                <p className="text-sm font-medium text-slate-800 dark:text-slate-100">Reset Demo Data</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400">Resets all data to the original mock dataset. This cannot be undone.</p>
               </div>
               <Button
                 variant="danger"
@@ -60,10 +60,10 @@ export function Settings() {
                 <RotateCcw className="h-4 w-4" /> Reset
               </Button>
             </div>
-            <div className="flex items-center justify-between py-3 border-b border-slate-100">
+            <div className="flex items-center justify-between py-3 border-b border-slate-100 dark:border-slate-700">
               <div>
-                <p className="text-sm font-medium text-slate-800">Export Data</p>
-                <p className="text-xs text-slate-500">Download all CRM data as a JSON file.</p>
+                <p className="text-sm font-medium text-slate-800 dark:text-slate-100">Export Data</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400">Download all CRM data as a JSON file.</p>
               </div>
               <Button variant="outline" size="sm" onClick={handleExport}>
                 <Download className="h-4 w-4" /> Export JSON
@@ -71,8 +71,8 @@ export function Settings() {
             </div>
             <div className="flex items-center justify-between py-3">
               <div>
-                <p className="text-sm font-medium text-slate-800">Import Data</p>
-                <p className="text-xs text-slate-500">Load data from a previously exported JSON file.</p>
+                <p className="text-sm font-medium text-slate-800 dark:text-slate-100">Import Data</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400">Load data from a previously exported JSON file.</p>
               </div>
               <div className="flex items-center gap-2">
                 {importMsg && <span className="text-xs text-emerald-600">{importMsg}</span>}
@@ -87,12 +87,12 @@ export function Settings() {
 
         <Card>
           <CardHeader><CardTitle>About</CardTitle></CardHeader>
-          <CardContent className="space-y-2 text-sm text-slate-600">
+          <CardContent className="space-y-2 text-sm text-slate-600 dark:text-slate-300">
             <p><span className="font-medium">App:</span> Lation Ops CRM</p>
             <p><span className="font-medium">Version:</span> 1.0.0</p>
             <p><span className="font-medium">Team:</span> Roberto · Reynaldo · Santiago</p>
             <p><span className="font-medium">Storage:</span> localStorage (local-first)</p>
-            <p className="text-xs text-slate-400 pt-2">This is an internal tool for Lation. No data is sent to external servers.</p>
+            <p className="text-xs text-slate-400 dark:text-slate-500 pt-2">This is an internal tool for Lation. No data is sent to external servers.</p>
           </CardContent>
         </Card>
       </div>
