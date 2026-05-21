@@ -121,30 +121,30 @@ export function Candidates() {
         {filtered.length === 0 ? (
           <EmptyState title="No candidates found" action={{ label: 'Add Candidate', onClick: openAdd }} />
         ) : (
-          <div className="rounded-xl border border-slate-200 bg-white overflow-hidden">
+          <div className="rounded-xl border border-slate-200 bg-white overflow-hidden dark:border-slate-700 dark:bg-slate-800">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-slate-100 bg-slate-50">
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500">Name</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500">Client</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500">Role</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500">Stack</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500">Status</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500">Level</th>
+                <tr className="border-b border-slate-100 bg-slate-50 dark:border-slate-700 dark:bg-slate-900">
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-400">Name</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-400">Client</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-400">Role</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-400">Stack</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-400">Status</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-400">Level</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
                 {filtered.map((c) => (
-                  <tr key={c.id} className="hover:bg-slate-50 cursor-pointer" onClick={() => openEdit(c)}>
+                  <tr key={c.id} className="hover:bg-slate-50 cursor-pointer dark:hover:bg-slate-700" onClick={() => openEdit(c)}>
                     <td className="px-4 py-3">
-                      <p className="font-medium text-slate-900">{c.name}</p>
-                      <p className="text-xs text-slate-400">{c.location ?? '—'}</p>
+                      <p className="font-medium text-slate-900 dark:text-slate-100">{c.name}</p>
+                      <p className="text-xs text-slate-400 dark:text-slate-500">{c.location ?? '—'}</p>
                     </td>
-                    <td className="px-4 py-3 text-slate-600">{companyMap[c.companyId]?.name ?? '—'}</td>
-                    <td className="px-4 py-3 text-slate-600">{needMap[c.hiringNeedId]?.roleTitle ?? '—'}</td>
-                    <td className="px-4 py-3 text-xs text-slate-500">{c.mainStack.slice(0, 3).join(', ')}</td>
+                    <td className="px-4 py-3 text-slate-600 dark:text-slate-300">{companyMap[c.companyId]?.name ?? '—'}</td>
+                    <td className="px-4 py-3 text-slate-600 dark:text-slate-300">{needMap[c.hiringNeedId]?.roleTitle ?? '—'}</td>
+                    <td className="px-4 py-3 text-xs text-slate-500 dark:text-slate-400">{c.mainStack.slice(0, 3).join(', ')}</td>
                     <td className="px-4 py-3"><CandidateStatusBadge status={c.status} /></td>
-                    <td className="px-4 py-3 text-xs text-slate-500 capitalize">{c.seniority ?? '—'}</td>
+                    <td className="px-4 py-3 text-xs text-slate-500 capitalize dark:text-slate-400">{c.seniority ?? '—'}</td>
                   </tr>
                 ))}
               </tbody>

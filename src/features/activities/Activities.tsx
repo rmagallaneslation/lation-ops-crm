@@ -118,7 +118,7 @@ export function Activities() {
             {filtered.map((a) => (
               <div
                 key={a.id}
-                className="flex gap-4 rounded-xl bg-white border border-slate-200 p-4 cursor-pointer hover:shadow-sm transition-shadow"
+                className="flex gap-4 rounded-xl bg-white border border-slate-200 p-4 cursor-pointer hover:shadow-sm transition-shadow dark:bg-slate-800 dark:border-slate-700"
                 onClick={() => openEdit(a)}
               >
                 <div className="text-xl flex-shrink-0 mt-0.5">{ACTIVITY_ICONS[a.type]}</div>

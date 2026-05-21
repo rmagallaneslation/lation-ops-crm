@@ -97,9 +97,9 @@ export function Reports() {
                 { label: 'Interviews', value: ints.length },
                 { label: 'Scorecards', value: scs.length },
               ].map(({ label, value }) => (
-                <div key={label} className="rounded-xl bg-white border border-slate-200 p-4">
-                  <p className="text-xs text-slate-500">{label}</p>
-                  <p className="text-2xl font-bold text-slate-900">{value}</p>
+                <div key={label} className="rounded-xl bg-white border border-slate-200 p-4 dark:bg-slate-800 dark:border-slate-700">
+                  <p className="text-xs text-slate-500 dark:text-slate-400">{label}</p>
+                  <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">{value}</p>
                 </div>
               ))}
             </div>
@@ -111,21 +111,21 @@ export function Reports() {
                 <CardContent>
                   <table className="w-full text-sm">
                     <thead>
-                      <tr className="border-b border-slate-100">
-                        <th className="pb-2 text-left text-xs font-semibold text-slate-500">Candidate</th>
-                        <th className="pb-2 text-left text-xs font-semibold text-slate-500">Role</th>
-                        <th className="pb-2 text-left text-xs font-semibold text-slate-500">Avg Score</th>
-                        <th className="pb-2 text-left text-xs font-semibold text-slate-500">Recommendation</th>
-                        <th className="pb-2 text-left text-xs font-semibold text-slate-500">Date</th>
+                      <tr className="border-b border-slate-100 dark:border-slate-700">
+                        <th className="pb-2 text-left text-xs font-semibold text-slate-500 dark:text-slate-400">Candidate</th>
+                        <th className="pb-2 text-left text-xs font-semibold text-slate-500 dark:text-slate-400">Role</th>
+                        <th className="pb-2 text-left text-xs font-semibold text-slate-500 dark:text-slate-400">Avg Score</th>
+                        <th className="pb-2 text-left text-xs font-semibold text-slate-500 dark:text-slate-400">Recommendation</th>
+                        <th className="pb-2 text-left text-xs font-semibold text-slate-500 dark:text-slate-400">Date</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-100">
+                    <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
                       {scs.map((sc) => {
                         const cand = candidateMap[sc.candidateId]
                         const avg = (sc.technicalKnowledge + sc.problemSolving + sc.communication + sc.seniorityAlignment + sc.roleFit + sc.clientReadiness) / 6
                         return (
                           <tr key={sc.id}>
-                            <td className="py-2 font-medium text-slate-800">{cand?.name ?? '—'}</td>
+                            <td className="py-2 font-medium text-slate-800 dark:text-slate-100">{cand?.name ?? '—'}</td>
                             <td className="py-2 text-slate-500 capitalize">{sc.roleType.replace(/_/g, ' ')}</td>
                             <td className="py-2 text-slate-700 font-medium">{avg.toFixed(1)}/5</td>
                             <td className="py-2"><RecommendationBadge rec={sc.finalRecommendation} /></td>
@@ -146,17 +146,17 @@ export function Reports() {
                 <CardContent>
                   <table className="w-full text-sm">
                     <thead>
-                      <tr className="border-b border-slate-100">
-                        <th className="pb-2 text-left text-xs font-semibold text-slate-500">Name</th>
-                        <th className="pb-2 text-left text-xs font-semibold text-slate-500">Role</th>
-                        <th className="pb-2 text-left text-xs font-semibold text-slate-500">Stack</th>
-                        <th className="pb-2 text-left text-xs font-semibold text-slate-500">Status</th>
+                      <tr className="border-b border-slate-100 dark:border-slate-700">
+                        <th className="pb-2 text-left text-xs font-semibold text-slate-500 dark:text-slate-400">Name</th>
+                        <th className="pb-2 text-left text-xs font-semibold text-slate-500 dark:text-slate-400">Role</th>
+                        <th className="pb-2 text-left text-xs font-semibold text-slate-500 dark:text-slate-400">Stack</th>
+                        <th className="pb-2 text-left text-xs font-semibold text-slate-500 dark:text-slate-400">Status</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-100">
+                    <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
                       {cands.map((c) => (
                         <tr key={c.id}>
-                          <td className="py-2 font-medium text-slate-800">{c.name}</td>
+                          <td className="py-2 font-medium text-slate-800 dark:text-slate-100">{c.name}</td>
                           <td className="py-2 text-slate-500">{needMap[c.hiringNeedId]?.roleTitle ?? '—'}</td>
                           <td className="py-2 text-xs text-slate-500">{c.mainStack.slice(0, 3).join(', ')}</td>
                           <td className="py-2"><CandidateStatusBadge status={c.status} /></td>
@@ -175,18 +175,18 @@ export function Reports() {
                 <CardContent>
                   <table className="w-full text-sm">
                     <thead>
-                      <tr className="border-b border-slate-100">
-                        <th className="pb-2 text-left text-xs font-semibold text-slate-500">Candidate</th>
-                        <th className="pb-2 text-left text-xs font-semibold text-slate-500">Type</th>
-                        <th className="pb-2 text-left text-xs font-semibold text-slate-500">Interviewer</th>
-                        <th className="pb-2 text-left text-xs font-semibold text-slate-500">Date</th>
-                        <th className="pb-2 text-left text-xs font-semibold text-slate-500">Status</th>
+                      <tr className="border-b border-slate-100 dark:border-slate-700">
+                        <th className="pb-2 text-left text-xs font-semibold text-slate-500 dark:text-slate-400">Candidate</th>
+                        <th className="pb-2 text-left text-xs font-semibold text-slate-500 dark:text-slate-400">Type</th>
+                        <th className="pb-2 text-left text-xs font-semibold text-slate-500 dark:text-slate-400">Interviewer</th>
+                        <th className="pb-2 text-left text-xs font-semibold text-slate-500 dark:text-slate-400">Date</th>
+                        <th className="pb-2 text-left text-xs font-semibold text-slate-500 dark:text-slate-400">Status</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-100">
+                    <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
                       {ints.map((i) => (
                         <tr key={i.id}>
-                          <td className="py-2 font-medium text-slate-800">{candidateMap[i.candidateId]?.name ?? '—'}</td>
+                          <td className="py-2 font-medium text-slate-800 dark:text-slate-100">{candidateMap[i.candidateId]?.name ?? '—'}</td>
                           <td className="py-2 text-xs text-slate-500">{INTERVIEW_TYPE_LABELS[i.interviewType]}</td>
                           <td className="py-2 text-slate-500">{i.interviewer}</td>
                           <td className="py-2 text-xs text-slate-400">{i.scheduledAt ? formatDateTime(i.scheduledAt) : '—'}</td>

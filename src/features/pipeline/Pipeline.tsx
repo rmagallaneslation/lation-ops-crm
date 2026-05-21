@@ -26,18 +26,18 @@ export function Pipeline() {
             return (
               <div key={stage} className="flex flex-col w-64 flex-shrink-0">
                 <div className="mb-2 flex items-center justify-between">
-                  <span className="text-xs font-semibold text-slate-700">{COMPANY_STATUS_LABELS[stage]}</span>
+                  <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">{COMPANY_STATUS_LABELS[stage]}</span>
                   <span className="text-xs text-slate-400">{cols.length}</span>
                 </div>
-                <div className="flex flex-col gap-2 min-h-[200px] rounded-xl bg-slate-100 p-2">
+                <div className="flex flex-col gap-2 min-h-[200px] rounded-xl bg-slate-100 p-2 dark:bg-slate-800">
                   {cols.map((c) => (
                     <div
                       key={c.id}
-                      className="rounded-lg bg-white p-3 shadow-sm border border-slate-200 cursor-pointer hover:shadow-md transition-shadow"
+                      className="rounded-lg bg-white p-3 shadow-sm border border-slate-200 cursor-pointer hover:shadow-md transition-shadow dark:bg-slate-700 dark:border-slate-600"
                       onClick={() => setSelected(c)}
                     >
-                      <p className="text-xs font-semibold text-slate-900 truncate">{c.name}</p>
-                      <p className="text-xs text-slate-500 truncate">{c.industry}</p>
+                      <p className="text-xs font-semibold text-slate-900 truncate dark:text-slate-100">{c.name}</p>
+                      <p className="text-xs text-slate-500 truncate dark:text-slate-400">{c.industry}</p>
                       <div className="mt-2 flex flex-wrap gap-1">
                         <PriorityBadge priority={c.priority} />
                       </div>

@@ -83,7 +83,7 @@ export function ClientDetail() {
             {cands.length === 0 ? <p className="text-xs text-slate-400">No candidates yet.</p> : (
               <div className="divide-y divide-slate-100">
                 {cands.map((c) => (
-                  <div key={c.id} className="flex items-center justify-between py-3">
+                  <div key={c.id} className="flex items-center justify-between py-3 dark:text-slate-300">
                     <div>
                       <p className="text-sm font-medium text-slate-800">{c.name}</p>
                       <p className="text-xs text-slate-500">{c.seniority} · {c.mainStack.slice(0, 3).join(', ')}</p>
@@ -105,7 +105,7 @@ export function ClientDetail() {
                 {ints.map((i) => {
                   const cand = candidateMap[i.candidateId]
                   return (
-                    <div key={i.id} className="flex items-center justify-between py-3">
+                    <div key={i.id} className="flex items-center justify-between py-3 dark:text-slate-300">
                       <div>
                         <p className="text-sm font-medium text-slate-800">{cand?.name ?? '—'}</p>
                         <p className="text-xs text-slate-500">

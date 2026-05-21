@@ -104,13 +104,13 @@ export function Interviews() {
     const need = needMap[i.hiringNeedId]
     return (
       <div
-        className="flex items-center justify-between py-3 border-b border-slate-100 last:border-0 cursor-pointer hover:bg-slate-50 px-4 rounded"
+        className="flex items-center justify-between py-3 border-b border-slate-100 last:border-0 cursor-pointer hover:bg-slate-50 px-4 rounded dark:border-slate-700 dark:hover:bg-slate-700"
         onClick={() => openEdit(i)}
       >
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-medium text-slate-900">{cand?.name ?? '—'}</p>
-          <p className="text-xs text-slate-500">{need?.roleTitle ?? '—'} · {company?.name ?? '—'}</p>
-          <p className="text-xs text-slate-400">{i.interviewer} · {i.scheduledAt ? formatDateTime(i.scheduledAt) : 'Not scheduled'}</p>
+          <p className="text-sm font-medium text-slate-900 dark:text-slate-100">{cand?.name ?? '—'}</p>
+          <p className="text-xs text-slate-500 dark:text-slate-400">{need?.roleTitle ?? '—'} · {company?.name ?? '—'}</p>
+          <p className="text-xs text-slate-400 dark:text-slate-500">{i.interviewer} · {i.scheduledAt ? formatDateTime(i.scheduledAt) : 'Not scheduled'}</p>
         </div>
         <div className="flex gap-2 flex-shrink-0">
           <InterviewTypeBadge type={i.interviewType} />
@@ -149,8 +149,8 @@ export function Interviews() {
 
         {upcoming.length > 0 && (
           <div>
-            <h2 className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">Upcoming ({upcoming.length})</h2>
-            <div className="rounded-xl border border-slate-200 bg-white">
+            <h2 className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3 dark:text-slate-400">Upcoming ({upcoming.length})</h2>
+            <div className="rounded-xl border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800">
               {upcoming.map((i) => <InterviewRow key={i.id} i={i} />)}
             </div>
           </div>
@@ -158,8 +158,8 @@ export function Interviews() {
 
         {past.length > 0 && (
           <div>
-            <h2 className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">Past / Completed ({past.length})</h2>
-            <div className="rounded-xl border border-slate-200 bg-white">
+            <h2 className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3 dark:text-slate-400">Past / Completed ({past.length})</h2>
+            <div className="rounded-xl border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800">
               {past.map((i) => <InterviewRow key={i.id} i={i} />)}
             </div>
           </div>
