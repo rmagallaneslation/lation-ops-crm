@@ -13,21 +13,10 @@ export const useTheme = create<ThemeState>()(
     (set, get) => ({
       dark: false,
       sidebarCollapsed: false,
-      toggleDark: () => {
-        const next = !get().dark
-        set({ dark: next })
-        document.documentElement.classList.toggle('dark', next)
-      },
+      // Pure state toggle — DOM sync lives in App.tsx useEffect
+      toggleDark: () => set({ dark: !get().dark }),
       toggleSidebar: () => set((s) => ({ sidebarCollapsed: !s.sidebarCollapsed })),
     }),
-    {
-      name: 'lation-theme',
-      onRehydrateStorage: () => (state) => {
-        // Apply dark class on hydration so it's set before first paint
-        if (state?.dark) {
-          document.documentElement.classList.add('dark')
-        }
-      },
-    }
+    { name: 'lation-theme' }
   )
 )

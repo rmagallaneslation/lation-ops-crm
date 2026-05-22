@@ -125,16 +125,16 @@ export function HiringNeeds() {
               <Card key={h.id} className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => openEdit(h)}>
                 <CardContent className="p-4 space-y-2">
                   <div className="flex items-start justify-between gap-2">
-                    <p className="text-sm font-semibold text-slate-900">{h.roleTitle}</p>
+                    <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">{h.roleTitle}</p>
                     <UrgencyBadge urgency={h.urgency} />
                   </div>
-                  <p className="text-xs text-slate-500">{companyMap[h.companyId]?.name ?? '—'}</p>
-                  <p className="text-xs text-slate-500">{h.seniority} · {h.stack.slice(0, 3).join(', ')}</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">{companyMap[h.companyId]?.name ?? '—'}</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">{h.seniority} · {h.stack.slice(0, 3).join(', ')}</p>
                   <div className="flex items-center justify-between">
                     <HiringNeedStatusBadge status={h.status} />
-                    <span className="text-xs text-slate-400">Vol: {h.candidateVolume ?? '—'}</span>
+                    <span className="text-xs text-slate-400 dark:text-slate-500">Vol: {h.candidateVolume ?? '—'}</span>
                   </div>
-                  <p className="text-xs text-slate-400">Must: {h.mustHaveSkills.slice(0, 2).join(', ')}{h.mustHaveSkills.length > 2 ? '...' : ''}</p>
+                  <p className="text-xs text-slate-400 dark:text-slate-500">Must: {h.mustHaveSkills.slice(0, 2).join(', ')}{h.mustHaveSkills.length > 2 ? '...' : ''}</p>
                 </CardContent>
               </Card>
             ))}

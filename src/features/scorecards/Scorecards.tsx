@@ -144,20 +144,20 @@ export function Scorecards() {
                   <CardContent className="p-4 space-y-3">
                     <div className="flex items-start justify-between gap-2">
                       <div>
-                        <p className="text-sm font-semibold text-slate-900">{cand?.name ?? '—'}</p>
-                        <p className="text-xs text-slate-500">{company?.name ?? '—'} · {sc.roleType.replace(/_/g, ' ')}</p>
+                        <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">{cand?.name ?? '—'}</p>
+                        <p className="text-xs text-slate-500 dark:text-slate-400">{company?.name ?? '—'} · {sc.roleType.replace(/_/g, ' ')}</p>
                       </div>
                       <RecommendationBadge rec={sc.finalRecommendation} />
                     </div>
                     <div className="grid grid-cols-2 gap-x-4 gap-y-1.5">
                       {DIMENSIONS.map(({ key, label }) => (
                         <div key={key} className="flex items-center justify-between gap-2">
-                          <span className="text-xs text-slate-500 truncate">{label}</span>
+                          <span className="text-xs text-slate-500 dark:text-slate-400 truncate">{label}</span>
                           <ScoreDots value={sc[key]} />
                         </div>
                       ))}
                     </div>
-                    <p className="text-xs text-slate-400 font-medium">Avg: {avg.toFixed(1)} / 5</p>
+                    <p className="text-xs text-slate-400 dark:text-slate-300 font-medium">Avg: {avg.toFixed(1)} / 5</p>
                     {interview?.interviewType && (
                       <p className="text-xs text-slate-400">{interview.interviewType.replace(/_/g, ' ')}</p>
                     )}

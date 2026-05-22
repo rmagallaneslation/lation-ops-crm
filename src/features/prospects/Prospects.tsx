@@ -146,8 +146,8 @@ export function Prospects() {
                 <CardContent className="p-4 space-y-3">
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0">
-                      <p className="text-sm font-semibold text-slate-900 truncate">{c.name}</p>
-                      <p className="text-xs text-slate-500">{c.industry} · {c.city ?? ''}{c.city ? ', ' : ''}{c.country}</p>
+                      <p className="text-sm font-semibold text-slate-900 truncate dark:text-slate-100">{c.name}</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400">{c.industry} · {c.city ?? ''}{c.city ? ', ' : ''}{c.country}</p>
                     </div>
                     <PriorityBadge priority={c.priority} />
                   </div>
@@ -155,14 +155,14 @@ export function Prospects() {
                     <CompanyStatusBadge status={c.status} />
                   </div>
                   {c.contactName && (
-                    <p className="text-xs text-slate-600">
+                    <p className="text-xs text-slate-600 dark:text-slate-300">
                       {c.contactName}{c.contactRole ? ` · ${c.contactRole}` : ''}
                     </p>
                   )}
-                  <div className="flex items-center justify-between text-xs text-slate-400">
+                  <div className="flex items-center justify-between text-xs text-slate-400 dark:text-slate-500">
                     <span>{c.owner}</span>
                     {c.estimatedDealValue && (
-                      <span className="font-medium text-slate-600">${(c.estimatedDealValue / 1000).toFixed(0)}k</span>
+                      <span className="font-medium text-slate-600 dark:text-slate-300">${(c.estimatedDealValue / 1000).toFixed(0)}k</span>
                     )}
                   </div>
                   {c.nextFollowUpDate && (

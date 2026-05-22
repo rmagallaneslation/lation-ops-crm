@@ -94,10 +94,10 @@ export function Dashboard() {
                 const company = companyMap[i.companyId]
                 const need = hiringNeedMap[i.hiringNeedId]
                 return (
-                  <div key={i.id} className="rounded-lg border border-slate-100 p-3">
-                    <p className="text-xs font-semibold text-slate-800">{candidate?.name ?? '—'}</p>
-                    <p className="text-xs text-slate-500">{need?.roleTitle ?? '—'} · {company?.name ?? '—'}</p>
-                    <p className="text-xs text-slate-400 mt-1">{i.scheduledAt ? formatDateTime(i.scheduledAt) : '—'}</p>
+                  <div key={i.id} className="rounded-lg border border-slate-100 p-3 dark:border-slate-700">
+                    <p className="text-xs font-semibold text-slate-800 dark:text-slate-200">{candidate?.name ?? '—'}</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">{need?.roleTitle ?? '—'} · {company?.name ?? '—'}</p>
+                    <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">{i.scheduledAt ? formatDateTime(i.scheduledAt) : '—'}</p>
                     <div className="mt-1.5">
                       <InterviewStatusBadge status={i.status} />
                     </div>
@@ -117,17 +117,17 @@ export function Dashboard() {
             {activeClients.length === 0 && (
               <p className="text-xs text-slate-400">No active clients yet</p>
             )}
-            <div className="divide-y divide-slate-100">
+            <div className="divide-y divide-slate-100 dark:divide-slate-700">
               {activeClients.map((c) => {
                 const needs = hiringNeeds.filter((h) => h.companyId === c.id)
                 const cands = candidates.filter((ca) => ca.companyId === c.id)
                 return (
                   <div key={c.id} className="flex items-center justify-between py-3">
                     <div>
-                      <p className="text-sm font-medium text-slate-800">{c.name}</p>
-                      <p className="text-xs text-slate-500">{c.industry} · {c.city}, {c.country}</p>
+                      <p className="text-sm font-medium text-slate-800 dark:text-slate-200">{c.name}</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400">{c.industry} · {c.city}, {c.country}</p>
                     </div>
-                    <div className="flex gap-4 text-xs text-slate-600">
+                    <div className="flex gap-4 text-xs text-slate-600 dark:text-slate-300">
                       <span className="flex items-center gap-1">
                         <ClipboardList className="h-3 w-3 text-slate-400" />
                         {needs.length} roles

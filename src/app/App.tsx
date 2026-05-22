@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { Layout } from '../components/layout/Layout'
 import { Dashboard } from '../features/dashboard/Dashboard'
@@ -12,8 +13,16 @@ import { Scorecards } from '../features/scorecards/Scorecards'
 import { Reports } from '../features/reports/Reports'
 import { Activities } from '../features/activities/Activities'
 import { Settings } from '../features/settings/Settings'
+import { useTheme } from '../lib/theme'
 
 export default function App() {
+  const dark = useTheme((s) => s.dark)
+
+  // Single source of truth: sync store → html.classList on every change
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', dark)
+  }, [dark])
+
   return (
     <BrowserRouter>
       <Routes>
