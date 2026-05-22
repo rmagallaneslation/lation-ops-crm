@@ -11,10 +11,10 @@ import { useLationStore } from '../../store/useLationStore'
 import type { Talent, TalentLevel, TalentStatus, EmploymentType } from '../../types/lation'
 
 const STATUS_COLORS: Record<TalentStatus, string> = {
-  active: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400',
+  available: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400',
+  in_process: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
   placed: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
-  unavailable: 'bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-400',
-  reviewing: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
+  inactive: 'bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-400',
 }
 
 const LEVEL_COLORS: Record<TalentLevel, string> = {
@@ -33,7 +33,7 @@ const empty = (): Form => ({
   years_of_experience: 2, specialization: 'Full Stack',
   cv_url: '', available_from: '', employment_type: 'full_time',
   preferred_salary_min: undefined, preferred_salary_max: undefined, preferred_salary_currency: 'USD',
-  status: 'active',
+  status: 'available',
 })
 
 export function Talents() {
@@ -90,10 +90,10 @@ export function Talents() {
           </div>
           <Select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} className="w-40">
             <option value="">All Statuses</option>
-            <option value="active">Active</option>
+            <option value="available">Available</option>
+            <option value="in_process">In Process</option>
             <option value="placed">Placed</option>
-            <option value="reviewing">Reviewing</option>
-            <option value="unavailable">Unavailable</option>
+            <option value="inactive">Inactive</option>
           </Select>
           <Select value={filterLevel} onChange={(e) => setFilterLevel(e.target.value)} className="w-36">
             <option value="">All Levels</option>
@@ -221,10 +221,10 @@ export function Talents() {
           <div className="space-y-1">
             <Label>Status</Label>
             <Select value={form.status} onChange={(e) => set('status', e.target.value as TalentStatus)}>
-              <option value="active">Active</option>
-              <option value="reviewing">Reviewing</option>
+              <option value="available">Available</option>
+              <option value="in_process">In Process</option>
               <option value="placed">Placed</option>
-              <option value="unavailable">Unavailable</option>
+              <option value="inactive">Inactive</option>
             </Select>
           </div>
           <div className="space-y-1">

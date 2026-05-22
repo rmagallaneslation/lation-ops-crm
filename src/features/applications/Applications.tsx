@@ -14,8 +14,8 @@ import type { Application, ApplicationStatus } from '../../types/lation'
 const COLUMNS: { status: ApplicationStatus; label: string; color: string }[] = [
   { status: 'applied', label: 'Applied', color: 'bg-slate-100 dark:bg-slate-800' },
   { status: 'screening', label: 'Screening', color: 'bg-sky-50 dark:bg-sky-950/30' },
-  { status: 'interview_scheduled', label: 'Interview', color: 'bg-violet-50 dark:bg-violet-950/30' },
-  { status: 'interview_done', label: 'Reviewed', color: 'bg-amber-50 dark:bg-amber-950/30' },
+  { status: 'interview', label: 'Interview', color: 'bg-violet-50 dark:bg-violet-950/30' },
+  { status: 'reviewed', label: 'Reviewed', color: 'bg-amber-50 dark:bg-amber-950/30' },
   { status: 'offer_sent', label: 'Offer Sent', color: 'bg-blue-50 dark:bg-blue-950/30' },
   { status: 'accepted', label: 'Accepted', color: 'bg-emerald-50 dark:bg-emerald-950/30' },
 ]
@@ -23,12 +23,11 @@ const COLUMNS: { status: ApplicationStatus; label: string; color: string }[] = [
 const STATUS_DOT: Record<ApplicationStatus, string> = {
   applied: 'bg-slate-400',
   screening: 'bg-sky-400',
-  interview_scheduled: 'bg-violet-500',
-  interview_done: 'bg-amber-500',
+  interview: 'bg-violet-500',
+  reviewed: 'bg-amber-500',
   offer_sent: 'bg-blue-500',
   accepted: 'bg-emerald-500',
   rejected: 'bg-red-400',
-  withdrawn: 'bg-slate-300',
 }
 
 type Form = Omit<Application, 'id' | 'created_at' | 'updated_at'>
@@ -57,7 +56,7 @@ export function Applications() {
   const positionMap = Object.fromEntries(positions.map((p) => [p.id, p]))
   const employerMap = Object.fromEntries(employers.map((e) => [e.id, e]))
 
-  const activeApps = applications.filter((a) => a.status !== 'rejected' && a.status !== 'withdrawn')
+  const activeApps = applications.filter((a) => a.status !== 'rejected')
 
   const filtered = activeApps.filter((a) => {
     const q = search.toLowerCase()
@@ -223,12 +222,11 @@ export function Applications() {
             <Select value={form.status} onChange={(e) => set('status', e.target.value as ApplicationStatus)}>
               <option value="applied">Applied</option>
               <option value="screening">Screening</option>
-              <option value="interview_scheduled">Interview Scheduled</option>
-              <option value="interview_done">Interview Done</option>
+              <option value="interview">Interview</option>
+              <option value="reviewed">Reviewed</option>
               <option value="offer_sent">Offer Sent</option>
               <option value="accepted">Accepted</option>
               <option value="rejected">Rejected</option>
-              <option value="withdrawn">Withdrawn</option>
             </Select>
           </div>
           <div className="space-y-1">

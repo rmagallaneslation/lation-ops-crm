@@ -1,4 +1,4 @@
-export type TalentStatus = 'active' | 'placed' | 'unavailable' | 'reviewing'
+export type TalentStatus = 'available' | 'in_process' | 'placed' | 'inactive'
 export type TalentLevel = 'junior' | 'mid' | 'senior' | 'lead' | 'architect'
 export type EmploymentType = 'full_time' | 'part_time' | 'contract' | 'freelance'
 
@@ -46,7 +46,7 @@ export type Employer = {
   updated_at: string
 }
 
-export type PositionStatus = 'open' | 'paused' | 'closed' | 'filled'
+export type PositionStatus = 'open' | 'in_progress' | 'filled' | 'closed'
 export type WorkLocation = 'remote' | 'hybrid' | 'on_site'
 export type ContractType = 'full_time' | 'part_time' | 'contract'
 
@@ -74,12 +74,11 @@ export type Position = {
 export type ApplicationStatus =
   | 'applied'
   | 'screening'
-  | 'interview_scheduled'
-  | 'interview_done'
+  | 'interview'
+  | 'reviewed'
   | 'offer_sent'
   | 'accepted'
   | 'rejected'
-  | 'withdrawn'
 
 export type Application = {
   id: string
@@ -93,19 +92,23 @@ export type Application = {
   updated_at: string
 }
 
-export type PlacementStatus = 'active' | 'completed' | 'terminated'
+export type PlacementStatus = 'placed' | 'completed' | 'extended'
+export type CommissionType = 'percentage' | 'fixed_fee' | 'subscription' | 'hybrid'
 
 export type Placement = {
   id: string
   talent_id: string
   position_id: string
   employer_id: string
-  application_id: string
+  application_id?: string | null
   start_date: string
   end_date?: string | null
   final_salary: number
+  commission_type: CommissionType
   commission_percentage: number
+  commission_fixed_fee: number
   commission_amount: number
+  currency: string
   status: PlacementStatus
   notes?: string | null
   created_at: string

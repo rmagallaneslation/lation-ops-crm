@@ -12,9 +12,9 @@ import { useLationStore } from '../../store/useLationStore'
 import type { Placement, PlacementStatus } from '../../types/lation'
 
 const STATUS_COLORS: Record<PlacementStatus, string> = {
-  active: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400',
+  placed: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400',
   completed: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
-  terminated: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
+  extended: 'bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-400',
 }
 
 type Form = Omit<Placement, 'id' | 'created_at' | 'updated_at'>
@@ -22,8 +22,9 @@ type Form = Omit<Placement, 'id' | 'created_at' | 'updated_at'>
 const empty = (): Form => ({
   talent_id: '', position_id: '', employer_id: '', application_id: '',
   start_date: new Date().toISOString().slice(0, 10), end_date: '',
-  final_salary: 0, commission_percentage: 15, commission_amount: 0,
-  status: 'active', notes: '',
+  final_salary: 0, commission_type: 'percentage', commission_percentage: 15,
+  commission_fixed_fee: 0, commission_amount: 0, currency: 'USD',
+  status: 'placed', notes: '',
 })
 
 export function Placements() {
@@ -58,7 +59,7 @@ export function Placements() {
   })
 
   const totalCommission = placements.reduce((sum, p) => sum + p.commission_amount, 0)
-  const activeCount = placements.filter((p) => p.status === 'active').length
+  const activeCount = placements.filter((p) => p.status === 'placed').length
   const completedCount = placements.filter((p) => p.status === 'completed').length
 
   function openAdd() { setEditing(null); setForm(empty()); setOpen(true) }
@@ -126,9 +127,9 @@ export function Placements() {
           </div>
           <Select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} className="w-40">
             <option value="">All Statuses</option>
-            <option value="active">Active</option>
+            <option value="placed">Placed</option>
             <option value="completed">Completed</option>
-            <option value="terminated">Terminated</option>
+            <option value="extended">Extended</option>
           </Select>
         </div>
 
@@ -203,7 +204,7 @@ export function Placements() {
           </div>
           <div className="space-y-1">
             <Label>Application *</Label>
-            <Select value={form.application_id} onChange={(e) => set('application_id', e.target.value)}>
+            <Select value={form.application_id ?? ''} onChange={(e) => set('application_id', e.target.value)}>
               <option value="">Select application…</option>
               {applications.map((a) => (
                 <option key={a.id} value={a.id}>
@@ -238,9 +239,9 @@ export function Placements() {
           <div className="space-y-1">
             <Label>Status</Label>
             <Select value={form.status} onChange={(e) => set('status', e.target.value as PlacementStatus)}>
-              <option value="active">Active</option>
+              <option value="placed">Placed</option>
               <option value="completed">Completed</option>
-              <option value="terminated">Terminated</option>
+              <option value="extended">Extended</option>
             </Select>
           </div>
           <div className="space-y-1">

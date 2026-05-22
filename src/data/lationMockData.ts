@@ -5,21 +5,21 @@ export const mockTalents: Talent[] = [
     id: 't1', full_name: 'Carlos Herrera', email: 'carlos.h@gmail.com', phone: '+52 81 1234 5678',
     country: 'Mexico', timezone: 'CST', tech_stack: ['React', 'TypeScript', 'Node.js', 'PostgreSQL'],
     languages: ['Spanish', 'English'], level: 'senior', years_of_experience: 6,
-    specialization: 'Frontend', employment_type: 'full_time', preferred_salary_currency: 'USD', status: 'active',
+    specialization: 'Frontend', employment_type: 'full_time', preferred_salary_currency: 'USD', status: 'available',
     created_at: '2026-01-10T10:00:00Z', updated_at: '2026-01-10T10:00:00Z',
   },
   {
     id: 't2', full_name: 'Valentina Rodríguez', email: 'vale.r@outlook.com',
     country: 'Colombia', timezone: 'COT', tech_stack: ['Python', 'Django', 'AWS', 'Docker'],
     languages: ['Spanish', 'English'], level: 'mid', years_of_experience: 3,
-    specialization: 'Backend', employment_type: 'full_time', preferred_salary_currency: 'USD', status: 'active',
+    specialization: 'Backend', employment_type: 'full_time', preferred_salary_currency: 'USD', status: 'available',
     created_at: '2026-01-12T09:00:00Z', updated_at: '2026-01-12T09:00:00Z',
   },
   {
     id: 't3', full_name: 'Mateus Oliveira', email: 'mateus.o@email.com',
     country: 'Brazil', timezone: 'BRT', tech_stack: ['Java', 'Spring Boot', 'Kubernetes', 'GCP'],
     languages: ['Portuguese', 'English'], level: 'senior', years_of_experience: 8,
-    specialization: 'Backend', employment_type: 'contract', preferred_salary_currency: 'USD', status: 'active',
+    specialization: 'Backend', employment_type: 'contract', preferred_salary_currency: 'USD', status: 'placed',
     created_at: '2026-01-15T11:00:00Z', updated_at: '2026-01-15T11:00:00Z',
   },
   {
@@ -33,21 +33,21 @@ export const mockTalents: Talent[] = [
     id: 't5', full_name: 'Andriy Kovalenko', email: 'andriy.k@gmail.com',
     country: 'Ukraine', timezone: 'EET', tech_stack: ['React', 'Next.js', 'Rust', 'Redis'],
     languages: ['Ukrainian', 'English', 'Russian'], level: 'senior', years_of_experience: 7,
-    specialization: 'Full Stack', employment_type: 'freelance', preferred_salary_currency: 'USD', status: 'active',
+    specialization: 'Full Stack', employment_type: 'freelance', preferred_salary_currency: 'USD', status: 'available',
     created_at: '2026-01-20T14:00:00Z', updated_at: '2026-01-20T14:00:00Z',
   },
   {
     id: 't6', full_name: 'Elena García', email: 'elena.g@proton.me',
     country: 'Spain', timezone: 'CET', tech_stack: ['Angular', 'TypeScript', '.NET', 'Azure'],
     languages: ['Spanish', 'English', 'French'], level: 'lead', years_of_experience: 10,
-    specialization: 'Full Stack', employment_type: 'full_time', preferred_salary_currency: 'USD', status: 'reviewing',
+    specialization: 'Full Stack', employment_type: 'full_time', preferred_salary_currency: 'USD', status: 'in_process',
     created_at: '2026-01-22T10:00:00Z', updated_at: '2026-01-22T10:00:00Z',
   },
   {
     id: 't7', full_name: 'Lucas Bianchi', email: 'lucas.b@gmail.com',
     country: 'Italy', timezone: 'CET', tech_stack: ['React Native', 'Swift', 'Kotlin', 'Firebase'],
     languages: ['Italian', 'English'], level: 'mid', years_of_experience: 3,
-    specialization: 'Mobile', employment_type: 'contract', preferred_salary_currency: 'USD', status: 'active',
+    specialization: 'Mobile', employment_type: 'contract', preferred_salary_currency: 'USD', status: 'available',
     created_at: '2026-01-25T09:00:00Z', updated_at: '2026-01-25T09:00:00Z',
   },
 ]
@@ -121,7 +121,7 @@ export const mockPositions: Position[] = [
 
 export const mockApplications: Application[] = [
   {
-    id: 'a1', talent_id: 't1', position_id: 'p1', status: 'interview_scheduled',
+    id: 'a1', talent_id: 't1', position_id: 'p1', status: 'interview',
     applied_at: '2026-01-16T10:00:00Z', interview_scheduled_at: '2026-01-28T15:00:00Z',
     notes: 'Strong profile, great TypeScript skills',
     created_at: '2026-01-16T10:00:00Z', updated_at: '2026-01-16T10:00:00Z',
@@ -137,7 +137,7 @@ export const mockApplications: Application[] = [
     created_at: '2026-01-18T14:00:00Z', updated_at: '2026-01-18T14:00:00Z',
   },
   {
-    id: 'a4', talent_id: 't6', position_id: 'p3', status: 'interview_done',
+    id: 'a4', talent_id: 't6', position_id: 'p3', status: 'reviewed',
     applied_at: '2026-01-23T10:00:00Z', interview_scheduled_at: '2026-01-30T10:00:00Z',
     notes: 'Impressive leadership skills, awaiting client feedback',
     created_at: '2026-01-23T10:00:00Z', updated_at: '2026-02-01T10:00:00Z',
@@ -162,15 +162,17 @@ export const mockApplications: Application[] = [
 export const mockPlacements: Placement[] = [
   {
     id: 'pl1', talent_id: 't3', position_id: 'p5', employer_id: 'e2', application_id: 'a6',
-    start_date: '2026-02-01', final_salary: 6500, commission_percentage: 15,
-    commission_amount: 975, status: 'active',
+    start_date: '2026-02-01', final_salary: 6500,
+    commission_type: 'percentage', commission_percentage: 15, commission_fixed_fee: 0,
+    commission_amount: 975, currency: 'USD', status: 'placed',
     notes: 'Smooth onboarding, client very satisfied',
     created_at: '2026-01-20T10:00:00Z', updated_at: '2026-02-01T10:00:00Z',
   },
   {
     id: 'pl2', talent_id: 't4', position_id: 'p5', employer_id: 'e1', application_id: 'a2',
     start_date: '2025-09-01', end_date: '2026-01-31', final_salary: 4200,
-    commission_percentage: 15, commission_amount: 630, status: 'completed',
+    commission_type: 'percentage', commission_percentage: 15, commission_fixed_fee: 0,
+    commission_amount: 630, currency: 'USD', status: 'completed',
     created_at: '2025-08-25T10:00:00Z', updated_at: '2026-02-01T10:00:00Z',
   },
 ]

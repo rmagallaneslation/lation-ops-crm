@@ -13,7 +13,7 @@ import type { Position, PositionStatus, TalentLevel, WorkLocation, ContractType 
 
 const STATUS_COLORS: Record<PositionStatus, string> = {
   open: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400',
-  paused: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
+  in_progress: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
   filled: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
   closed: 'bg-slate-100 text-slate-500 dark:bg-slate-700 dark:text-slate-400',
 }
@@ -206,7 +206,7 @@ export function Positions() {
             <Label>Status</Label>
             <Select value={form.status} onChange={(e) => set('status', e.target.value as PositionStatus)}>
               <option value="open">Open</option>
-              <option value="paused">Paused</option>
+              <option value="in_progress">In Progress</option>
               <option value="filled">Filled</option>
               <option value="closed">Closed</option>
             </Select>

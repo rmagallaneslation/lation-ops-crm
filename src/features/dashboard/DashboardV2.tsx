@@ -31,11 +31,11 @@ export function DashboardV2() {
   const applications = useLationStore((s) => s.applications)
   const placements = useLationStore((s) => s.placements)
 
-  const activeTalents = talents.filter((t) => t.status === 'active').length
+  const activeTalents = talents.filter((t) => t.status === 'available' || t.status === 'in_process').length
   const activeEmployers = employers.filter((e) => e.status === 'active').length
   const openPositions = positions.filter((p) => p.status === 'open').length
   const activeApplications = applications.filter((a) => !['rejected', 'withdrawn'].includes(a.status)).length
-  const activePlacements = placements.filter((p) => p.status === 'active').length
+  const activePlacements = placements.filter((p) => p.status === 'placed').length
   const totalCommission = placements.reduce((sum, p) => sum + p.commission_amount, 0)
 
   const recentApps = [...applications]
@@ -134,7 +134,7 @@ export function DashboardV2() {
             <div className="border-t border-slate-100 dark:border-slate-700 px-5 py-4">
               <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-3">Active Placements</h3>
               <div className="space-y-2">
-                {placements.filter((p) => p.status === 'active').map((p) => {
+                {placements.filter((p) => p.status === 'placed').map((p) => {
                   const talent = talentMap[p.talent_id]
                   const employer = employerMap[p.employer_id]
                   return (
