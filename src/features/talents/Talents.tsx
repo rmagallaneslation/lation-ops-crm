@@ -31,7 +31,9 @@ const empty = (): Form => ({
   full_name: '', email: '', phone: '', country: '', timezone: '',
   tech_stack: [], languages: ['Spanish', 'English'], level: 'mid',
   years_of_experience: 2, specialization: 'Full Stack',
-  cv_url: '', available_from: '', employment_type: 'full_time', status: 'active',
+  cv_url: '', available_from: '', employment_type: 'full_time',
+  preferred_salary_min: undefined, preferred_salary_max: undefined, preferred_salary_currency: 'USD',
+  status: 'active',
 })
 
 export function Talents() {
@@ -228,6 +230,22 @@ export function Talents() {
           <div className="space-y-1">
             <Label>Available From</Label>
             <Input type="date" value={form.available_from ?? ''} onChange={(e) => set('available_from', e.target.value)} />
+          </div>
+          <div className="space-y-1">
+            <Label>Preferred Min Salary</Label>
+            <Input type="number" value={form.preferred_salary_min ?? ''} onChange={(e) => set('preferred_salary_min', e.target.value ? Number(e.target.value) : undefined)} placeholder="3000" />
+          </div>
+          <div className="space-y-1">
+            <Label>Preferred Max Salary</Label>
+            <Input type="number" value={form.preferred_salary_max ?? ''} onChange={(e) => set('preferred_salary_max', e.target.value ? Number(e.target.value) : undefined)} placeholder="5000" />
+          </div>
+          <div className="space-y-1">
+            <Label>Preferred Currency</Label>
+            <Select value={form.preferred_salary_currency} onChange={(e) => set('preferred_salary_currency', e.target.value)}>
+              <option value="USD">USD</option>
+              <option value="EUR">EUR</option>
+              <option value="MXN">MXN</option>
+            </Select>
           </div>
           <div className="col-span-2 space-y-1">
             <Label>Tech Stack (comma-separated)</Label>

@@ -8,7 +8,7 @@ import { Dialog } from '../../components/ui/dialog'
 import { Label } from '../../components/ui/label'
 import { EmptyState } from '../../components/shared/EmptyState'
 import { useLationStore } from '../../store/useLationStore'
-import type { Employer, EmployerStatus } from '../../types/lation'
+import type { Employer, EmployerStatus, EmployerType } from '../../types/lation'
 
 const STATUS_COLORS: Record<EmployerStatus, string> = {
   active: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400',
@@ -21,7 +21,7 @@ type Form = Omit<Employer, 'id' | 'created_at' | 'updated_at'>
 const empty = (): Form => ({
   company_name: '', industry: '', country: '', email: '',
   phone: '', website: '', contact_name: '', contact_email: '',
-  contact_phone: '', status: 'active',
+  contact_phone: '', employer_type: 'hiring_company', status: 'active',
 })
 
 export function Employers() {
@@ -191,6 +191,14 @@ export function Employers() {
           <div className="space-y-1">
             <Label>Contact Phone</Label>
             <Input value={form.contact_phone ?? ''} onChange={(e) => set('contact_phone', e.target.value)} />
+          </div>
+          <div className="space-y-1">
+            <Label>Employer Type</Label>
+            <Select value={form.employer_type} onChange={(e) => set('employer_type', e.target.value as EmployerType)}>
+              <option value="hiring_company">Hiring Company</option>
+              <option value="talent_source">Talent Source</option>
+              <option value="both">Both</option>
+            </Select>
           </div>
           <div className="space-y-1">
             <Label>Status</Label>

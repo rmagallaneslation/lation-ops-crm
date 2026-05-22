@@ -1,10 +1,8 @@
 import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
+import { getSupabase } from '../lib/supabase'
 import type { Talent, Employer, Position, Application, Placement } from '../types/lation'
-import { mockTalents, mockEmployers, mockPositions, mockApplications, mockPlacements } from '../data/lationMockData'
 
-const now = () => new Date().toISOString()
-const id = (prefix: string) => `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`
+const emptyToNull = (value: string | null | undefined) => value?.trim() ? value : null
 
 type State = {
   talents: Talent[]
@@ -12,9 +10,13 @@ type State = {
   positions: Position[]
   applications: Application[]
   placements: Placement[]
+  loading: boolean
+  error: string | null
 }
 
 type Actions = {
+  loadLationData: () => Promise<void>
+
   addTalent: (t: Omit<Talent, 'id' | 'created_at' | 'updated_at'>) => void
   updateTalent: (id: string, patch: Partial<Talent>) => void
   deleteTalent: (id: string) => void
@@ -36,39 +38,241 @@ type Actions = {
   deletePlacement: (id: string) => void
 }
 
-const initialState: State = {
-  talents: mockTalents,
-  employers: mockEmployers,
-  positions: mockPositions,
-  applications: mockApplications,
-  placements: mockPlacements,
+type TalentInput = Omit<Talent, 'id' | 'created_at' | 'updated_at'>
+type EmployerInput = Omit<Employer, 'id' | 'created_at' | 'updated_at'>
+type PositionInput = Omit<Position, 'id' | 'created_at' | 'updated_at'>
+type ApplicationInput = Omit<Application, 'id' | 'created_at' | 'updated_at'>
+type PlacementInput = Omit<Placement, 'id' | 'created_at' | 'updated_at'>
+
+function isSupabaseError(error: unknown): error is { message?: string; code?: string; details?: string; hint?: string } {
+  return typeof error === 'object' && error !== null
 }
 
-export const useLationStore = create<State & Actions>()(
-  persist(
-    (set) => ({
-      ...initialState,
+function formatError(error: unknown) {
+  if (error instanceof Error) return error.message
+  if (!isSupabaseError(error)) return 'Unexpected Supabase error'
 
-      addTalent: (t) => set((s) => ({ talents: [...s.talents, { ...t, id: id('t'), created_at: now(), updated_at: now() }] })),
-      updateTalent: (tid, patch) => set((s) => ({ talents: s.talents.map((t) => t.id === tid ? { ...t, ...patch, updated_at: now() } : t) })),
-      deleteTalent: (tid) => set((s) => ({ talents: s.talents.filter((t) => t.id !== tid) })),
+  const parts = [error.message, error.code, error.details, error.hint].filter(Boolean)
+  return parts.length > 0 ? parts.join(' | ') : 'Unexpected Supabase error'
+}
 
-      addEmployer: (e) => set((s) => ({ employers: [...s.employers, { ...e, id: id('e'), created_at: now(), updated_at: now() }] })),
-      updateEmployer: (eid, patch) => set((s) => ({ employers: s.employers.map((e) => e.id === eid ? { ...e, ...patch, updated_at: now() } : e) })),
-      deleteEmployer: (eid) => set((s) => ({ employers: s.employers.filter((e) => e.id !== eid) })),
+function normalizeTalent(t: TalentInput): TalentInput {
+  return {
+    ...t,
+    phone: emptyToNull(t.phone),
+    timezone: emptyToNull(t.timezone),
+    cv_url: emptyToNull(t.cv_url),
+    available_from: emptyToNull(t.available_from),
+    created_by: emptyToNull(t.created_by),
+    preferred_salary_min: t.preferred_salary_min ?? null,
+    preferred_salary_max: t.preferred_salary_max ?? null,
+  }
+}
 
-      addPosition: (p) => set((s) => ({ positions: [...s.positions, { ...p, id: id('p'), created_at: now(), updated_at: now() }] })),
-      updatePosition: (pid, patch) => set((s) => ({ positions: s.positions.map((p) => p.id === pid ? { ...p, ...patch, updated_at: now() } : p) })),
-      deletePosition: (pid) => set((s) => ({ positions: s.positions.filter((p) => p.id !== pid) })),
+function normalizeEmployer(e: EmployerInput): EmployerInput {
+  return {
+    ...e,
+    phone: emptyToNull(e.phone),
+    website: emptyToNull(e.website),
+    contact_phone: emptyToNull(e.contact_phone),
+  }
+}
 
-      addApplication: (a) => set((s) => ({ applications: [...s.applications, { ...a, id: id('a'), created_at: now(), updated_at: now() }] })),
-      updateApplication: (aid, patch) => set((s) => ({ applications: s.applications.map((a) => a.id === aid ? { ...a, ...patch, updated_at: now() } : a) })),
-      deleteApplication: (aid) => set((s) => ({ applications: s.applications.filter((a) => a.id !== aid) })),
+function normalizePosition(p: PositionInput): PositionInput {
+  return {
+    ...p,
+    description: emptyToNull(p.description),
+    deadline: emptyToNull(p.deadline),
+    salary_min: p.salary_min ?? null,
+    salary_max: p.salary_max ?? null,
+  }
+}
 
-      addPlacement: (p) => set((s) => ({ placements: [...s.placements, { ...p, id: id('pl'), created_at: now(), updated_at: now() }] })),
-      updatePlacement: (plid, patch) => set((s) => ({ placements: s.placements.map((p) => p.id === plid ? { ...p, ...patch, updated_at: now() } : p) })),
-      deletePlacement: (plid) => set((s) => ({ placements: s.placements.filter((p) => p.id !== plid) })),
-    }),
-    { name: 'lation-v2' }
-  )
-)
+function normalizeApplication(a: ApplicationInput): ApplicationInput {
+  return {
+    ...a,
+    interview_scheduled_at: emptyToNull(a.interview_scheduled_at),
+    notes: emptyToNull(a.notes),
+  }
+}
+
+function normalizePlacement(p: PlacementInput): PlacementInput {
+  return {
+    ...p,
+    end_date: emptyToNull(p.end_date),
+    notes: emptyToNull(p.notes),
+  }
+}
+
+export const useLationStore = create<State & Actions>()((set) => {
+  const fail = (error: unknown) => {
+    set({ error: formatError(error), loading: false })
+  }
+
+  return {
+    talents: [],
+    employers: [],
+    positions: [],
+    applications: [],
+    placements: [],
+    loading: false,
+    error: null,
+
+    loadLationData: async () => {
+      set({ loading: true, error: null })
+      try {
+        const [talents, employers] = await Promise.all([
+          getSupabase().from('talents').select('*').order('created_at', { ascending: false }),
+          getSupabase().from('employers').select('*').order('created_at', { ascending: false }),
+        ])
+        if (talents.error) throw talents.error
+        if (employers.error) throw employers.error
+
+        const positions = await getSupabase().from('positions').select('*').order('created_at', { ascending: false })
+        if (positions.error) throw positions.error
+
+        const applications = await getSupabase().from('applications').select('*').order('created_at', { ascending: false })
+        if (applications.error) throw applications.error
+
+        const placements = await getSupabase().from('placements').select('*').order('created_at', { ascending: false })
+        if (placements.error) throw placements.error
+
+        set({
+          talents: talents.data ?? [],
+          employers: employers.data ?? [],
+          positions: positions.data ?? [],
+          applications: applications.data ?? [],
+          placements: placements.data ?? [],
+          loading: false,
+        })
+      } catch (error) {
+        fail(error)
+      }
+    },
+
+    addTalent: (t) => {
+      void (async () => {
+        set({ error: null })
+        const { data, error } = await getSupabase().from('talents').insert(normalizeTalent(t)).select().single()
+        if (error) throw error
+        if (data) set((s) => ({ talents: [data, ...s.talents] }))
+      })().catch(fail)
+    },
+    updateTalent: (tid, patch) => {
+      void (async () => {
+        set({ error: null })
+        const { data, error } = await getSupabase().from('talents').update(normalizeTalent({ ...patch } as TalentInput)).eq('id', tid).select().single()
+        if (error) throw error
+        if (data) set((s) => ({ talents: s.talents.map((t) => t.id === tid ? data : t) }))
+      })().catch(fail)
+    },
+    deleteTalent: (tid) => {
+      void (async () => {
+        set({ error: null })
+        const { error } = await getSupabase().from('talents').delete().eq('id', tid)
+        if (error) throw error
+        set((s) => ({ talents: s.talents.filter((t) => t.id !== tid) }))
+      })().catch(fail)
+    },
+
+    addEmployer: (e) => {
+      void (async () => {
+        set({ error: null })
+        const { data, error } = await getSupabase().from('employers').insert(normalizeEmployer(e)).select().single()
+        if (error) throw error
+        if (data) set((s) => ({ employers: [data, ...s.employers] }))
+      })().catch(fail)
+    },
+    updateEmployer: (eid, patch) => {
+      void (async () => {
+        set({ error: null })
+        const { data, error } = await getSupabase().from('employers').update(normalizeEmployer({ ...patch } as EmployerInput)).eq('id', eid).select().single()
+        if (error) throw error
+        if (data) set((s) => ({ employers: s.employers.map((e) => e.id === eid ? data : e) }))
+      })().catch(fail)
+    },
+    deleteEmployer: (eid) => {
+      void (async () => {
+        set({ error: null })
+        const { error } = await getSupabase().from('employers').delete().eq('id', eid)
+        if (error) throw error
+        set((s) => ({ employers: s.employers.filter((e) => e.id !== eid) }))
+      })().catch(fail)
+    },
+
+    addPosition: (p) => {
+      void (async () => {
+        set({ error: null })
+        const { data, error } = await getSupabase().from('positions').insert(normalizePosition(p)).select().single()
+        if (error) throw error
+        if (data) set((s) => ({ positions: [data, ...s.positions] }))
+      })().catch(fail)
+    },
+    updatePosition: (pid, patch) => {
+      void (async () => {
+        set({ error: null })
+        const { data, error } = await getSupabase().from('positions').update(normalizePosition({ ...patch } as PositionInput)).eq('id', pid).select().single()
+        if (error) throw error
+        if (data) set((s) => ({ positions: s.positions.map((p) => p.id === pid ? data : p) }))
+      })().catch(fail)
+    },
+    deletePosition: (pid) => {
+      void (async () => {
+        set({ error: null })
+        const { error } = await getSupabase().from('positions').delete().eq('id', pid)
+        if (error) throw error
+        set((s) => ({ positions: s.positions.filter((p) => p.id !== pid) }))
+      })().catch(fail)
+    },
+
+    addApplication: (a) => {
+      void (async () => {
+        set({ error: null })
+        const { data, error } = await getSupabase().from('applications').insert(normalizeApplication(a)).select().single()
+        if (error) throw error
+        if (data) set((s) => ({ applications: [data, ...s.applications] }))
+      })().catch(fail)
+    },
+    updateApplication: (aid, patch) => {
+      void (async () => {
+        set({ error: null })
+        const { data, error } = await getSupabase().from('applications').update(normalizeApplication({ ...patch } as ApplicationInput)).eq('id', aid).select().single()
+        if (error) throw error
+        if (data) set((s) => ({ applications: s.applications.map((a) => a.id === aid ? data : a) }))
+      })().catch(fail)
+    },
+    deleteApplication: (aid) => {
+      void (async () => {
+        set({ error: null })
+        const { error } = await getSupabase().from('applications').delete().eq('id', aid)
+        if (error) throw error
+        set((s) => ({ applications: s.applications.filter((a) => a.id !== aid) }))
+      })().catch(fail)
+    },
+
+    addPlacement: (p) => {
+      void (async () => {
+        set({ error: null })
+        const { data, error } = await getSupabase().from('placements').insert(normalizePlacement(p)).select().single()
+        if (error) throw error
+        if (data) set((s) => ({ placements: [data, ...s.placements] }))
+      })().catch(fail)
+    },
+    updatePlacement: (plid, patch) => {
+      void (async () => {
+        set({ error: null })
+        const { data, error } = await getSupabase().from('placements').update(normalizePlacement({ ...patch } as PlacementInput)).eq('id', plid).select().single()
+        if (error) throw error
+        if (data) set((s) => ({ placements: s.placements.map((p) => p.id === plid ? data : p) }))
+      })().catch(fail)
+    },
+    deletePlacement: (plid) => {
+      void (async () => {
+        set({ error: null })
+        const { error } = await getSupabase().from('placements').delete().eq('id', plid)
+        if (error) throw error
+        set((s) => ({ placements: s.placements.filter((p) => p.id !== plid) }))
+      })().catch(fail)
+    },
+  }
+})

@@ -11,7 +11,8 @@ Used by: Roberto, Reynaldo, Santiago.
 - Tailwind CSS v3
 - shadcn/ui design system (custom, not CLI-installed)
 - Radix UI primitives
-- Zustand v5 with persist (localStorage)
+- Zustand v5 for client state
+- Supabase JS for Phase 1 persistence
 - React Router v6
 - Recharts (dashboard charts)
 - Lucide React (icons)
@@ -30,7 +31,8 @@ src/
   lib/           utils.ts, formatters.ts, status.ts
   types/         index.ts — all TypeScript types
   data/          mockData.ts — demo data (fictional companies only)
-  store/         useStore.ts — Zustand store
+  store/         useStore.ts — legacy CRM store; useLationStore.ts — Supabase-backed Lation entities
+  supabase/      migrations for Supabase schema
 ```
 
 ## Key Entities
@@ -45,8 +47,9 @@ src/
 ## Rules
 
 - No real client names in mock data. Fictional companies only.
-- No Supabase, authentication, Google Calendar, Gmail, WhatsApp, AI, PDF generation.
-- No backend dependencies. localStorage-first.
+- No authentication, Google Calendar, Gmail, WhatsApp, AI, PDF generation.
+- Supabase is allowed only for Phase 1 Lation entities. Do not modify the existing Lation 1 `leads` table.
+- Temporary anon CRUD RLS policies are allowed for this no-auth phase only.
 - No `any`. Keep TypeScript strict.
 - Do not add unused imports (tsconfig has noUnusedLocals/noUnusedParameters).
 - Do not add comments unless the WHY is non-obvious.
@@ -62,6 +65,13 @@ npm run build   # production build (tsc + vite)
 npx tsc --noEmit  # type check only
 ```
 
+## Environment
+
+```bash
+VITE_SUPABASE_URL=
+VITE_SUPABASE_ANON_KEY=
+```
+
 ## Component Patterns
 
 - UI components: CVA + `cn()` utility for variants
@@ -73,4 +83,5 @@ npx tsc --noEmit  # type check only
 
 ## localStorage Key
 
-`lation-crm-v2` — Zustand persist key. Increment if schema changes.
+`lation-crm-v2` — legacy CRM persist key.
+`lation-v2` was the DEMO localStorage key for the new Lation pages before Supabase Phase 1.

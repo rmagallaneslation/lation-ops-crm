@@ -9,13 +9,19 @@ import { Applications } from '../features/applications/Applications'
 import { Placements } from '../features/placements/Placements'
 import { Settings } from '../features/settings/Settings'
 import { useTheme } from '../lib/theme'
+import { useLationStore } from '../store/useLationStore'
 
 export default function App() {
   const dark = useTheme((s) => s.dark)
+  const loadLationData = useLationStore((s) => s.loadLationData)
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', dark)
   }, [dark])
+
+  useEffect(() => {
+    void loadLationData()
+  }, [loadLationData])
 
   return (
     <BrowserRouter>

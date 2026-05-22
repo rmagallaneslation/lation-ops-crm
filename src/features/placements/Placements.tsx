@@ -31,6 +31,7 @@ export function Placements() {
   const talents = useLationStore((s) => s.talents)
   const positions = useLationStore((s) => s.positions)
   const employers = useLationStore((s) => s.employers)
+  const applications = useLationStore((s) => s.applications)
   const addPlacement = useLationStore((s) => s.addPlacement)
   const updatePlacement = useLationStore((s) => s.updatePlacement)
   const deletePlacement = useLationStore((s) => s.deletePlacement)
@@ -73,7 +74,7 @@ export function Placements() {
   }
 
   function handleSave() {
-    if (!form.talent_id || !form.employer_id) return
+    if (!form.talent_id || !form.employer_id || !form.position_id || !form.application_id) return
     if (editing) updatePlacement(editing.id, form)
     else addPlacement(form)
     setOpen(false)
@@ -194,10 +195,21 @@ export function Placements() {
             </Select>
           </div>
           <div className="space-y-1">
-            <Label>Position</Label>
+            <Label>Position *</Label>
             <Select value={form.position_id} onChange={(e) => set('position_id', e.target.value)}>
               <option value="">Select position…</option>
               {positions.map((p) => <option key={p.id} value={p.id}>{p.title}</option>)}
+            </Select>
+          </div>
+          <div className="space-y-1">
+            <Label>Application *</Label>
+            <Select value={form.application_id} onChange={(e) => set('application_id', e.target.value)}>
+              <option value="">Select application…</option>
+              {applications.map((a) => (
+                <option key={a.id} value={a.id}>
+                  {talentMap[a.talent_id]?.full_name ?? 'Unknown'} — {positionMap[a.position_id]?.title ?? 'Unknown'}
+                </option>
+              ))}
             </Select>
           </div>
           <div className="grid grid-cols-2 gap-4">
