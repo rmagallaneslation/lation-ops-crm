@@ -1,24 +1,18 @@
 import { useEffect } from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { Layout } from '../components/layout/Layout'
-import { Dashboard } from '../features/dashboard/Dashboard'
-import { Prospects } from '../features/prospects/Prospects'
-import { Pipeline } from '../features/pipeline/Pipeline'
-import { Clients } from '../features/clients/Clients'
-import { ClientDetail } from '../features/clients/ClientDetail'
-import { HiringNeeds } from '../features/hiring-needs/HiringNeeds'
-import { Candidates } from '../features/candidates/Candidates'
-import { Interviews } from '../features/interviews/Interviews'
-import { Scorecards } from '../features/scorecards/Scorecards'
-import { Reports } from '../features/reports/Reports'
-import { Activities } from '../features/activities/Activities'
+import { DashboardV2 } from '../features/dashboard/DashboardV2'
+import { Talents } from '../features/talents/Talents'
+import { Employers } from '../features/employers/Employers'
+import { Positions } from '../features/positions/Positions'
+import { Applications } from '../features/applications/Applications'
+import { Placements } from '../features/placements/Placements'
 import { Settings } from '../features/settings/Settings'
 import { useTheme } from '../lib/theme'
 
 export default function App() {
   const dark = useTheme((s) => s.dark)
 
-  // Single source of truth: sync store → html.classList on every change
   useEffect(() => {
     document.documentElement.classList.toggle('dark', dark)
   }, [dark])
@@ -27,17 +21,12 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Layout />}>
-          <Route index element={<Dashboard />} />
-          <Route path="prospects" element={<Prospects />} />
-          <Route path="pipeline" element={<Pipeline />} />
-          <Route path="clients" element={<Clients />} />
-          <Route path="clients/:id" element={<ClientDetail />} />
-          <Route path="hiring-needs" element={<HiringNeeds />} />
-          <Route path="candidates" element={<Candidates />} />
-          <Route path="interviews" element={<Interviews />} />
-          <Route path="scorecards" element={<Scorecards />} />
-          <Route path="reports" element={<Reports />} />
-          <Route path="activities" element={<Activities />} />
+          <Route index element={<DashboardV2 />} />
+          <Route path="talents" element={<Talents />} />
+          <Route path="employers" element={<Employers />} />
+          <Route path="positions" element={<Positions />} />
+          <Route path="applications" element={<Applications />} />
+          <Route path="placements" element={<Placements />} />
           <Route path="settings" element={<Settings />} />
         </Route>
       </Routes>

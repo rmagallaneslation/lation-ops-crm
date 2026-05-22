@@ -2,13 +2,10 @@ import { NavLink } from 'react-router-dom'
 import {
   LayoutDashboard,
   Building2,
-  KanbanSquare,
   Users,
   Briefcase,
-  CalendarCheck2,
-  ClipboardList,
-  BarChart3,
-  Activity,
+  FileText,
+  TrendingUp,
   Settings,
   ChevronLeft,
   ChevronRight,
@@ -21,15 +18,11 @@ import { useTheme } from '../../lib/theme'
 
 const NAV = [
   { to: '/', label: 'Dashboard', icon: LayoutDashboard, end: true },
-  { to: '/prospects', label: 'Prospects', icon: Building2 },
-  { to: '/pipeline', label: 'Pipeline', icon: KanbanSquare },
-  { to: '/clients', label: 'Clients', icon: Briefcase },
-  { to: '/hiring-needs', label: 'Hiring Needs', icon: ClipboardList },
-  { to: '/candidates', label: 'Candidates', icon: Users },
-  { to: '/interviews', label: 'Interviews', icon: CalendarCheck2 },
-  { to: '/scorecards', label: 'Scorecards', icon: BarChart3 },
-  { to: '/reports', label: 'Reports', icon: BarChart3 },
-  { to: '/activities', label: 'Activities', icon: Activity },
+  { to: '/talents', label: 'Talents', icon: Users },
+  { to: '/employers', label: 'Employers', icon: Building2 },
+  { to: '/positions', label: 'Positions', icon: Briefcase },
+  { to: '/applications', label: 'Applications', icon: FileText },
+  { to: '/placements', label: 'Placements', icon: TrendingUp },
   { to: '/settings', label: 'Settings', icon: Settings },
 ]
 
