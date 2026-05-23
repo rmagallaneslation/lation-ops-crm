@@ -6,7 +6,9 @@
     "positions": "Positions",
     "applications": "Applications",
     "placements": "Placements",
-    "leads": "Leads"
+    "leads": "Leads",
+    "settings": "Settings",
+    "administration": "Administration"
   },
   "common": {
     "search": "Search",
@@ -21,9 +23,34 @@
     "all_countries": "All Countries",
     "all_levels": "All Levels",
     "all_employers": "All Employers",
+    "all_types": "All Types",
+    "all_specializations": "All Specializations",
+    "columns": "Columns",
     "notes": "Notes",
     "status": "Status",
-    "currency": "Currency"
+    "currency": "Currency",
+    "type": "Type",
+    "company": "Company",
+    "contact": "Contact",
+    "links": "Links",
+    "open_positions": "Open Positions",
+    "salary": "Salary",
+    "deadline": "Deadline",
+    "start": "Start",
+    "commission": "Commission",
+    "empty": "Empty",
+    "select_talent": "Select talent…",
+    "select_employer": "Select employer…",
+    "select_position": "Select position…",
+    "select_application": "Select application…",
+    "unknown": "Unknown",
+    "website": "website",
+    "view_all": "View all",
+    "global_search_placeholder": "Search talents, employers, positions...",
+    "no_results_for": "No results for \"{{query}}\"",
+    "type_to_search": "Type to search...",
+    "dark_mode": "Dark Mode",
+    "light_mode": "Light Mode"
   },
   "dashboard": {
     "subtitle": "LATION OPS",
@@ -38,7 +65,35 @@
     "placements_this_month": "Placements This Month",
     "new_starts": "new starts",
     "total_commission": "Total Commission",
-    "all_time": "all time"
+    "all_time": "all time",
+    "hello": "Hello, LATION team",
+    "prompt": "What are you working on today?",
+    "active_employers": "Active Employers",
+    "prospects": "Prospects",
+    "new_talents": "new talents",
+    "active_placements_kpi": "Active Placements",
+    "with_clients": "with clients",
+    "accumulated": "accumulated",
+    "same_as_last_month": "same as last month",
+    "vs_last_month": "{{count}} vs last month",
+    "this_month": "{{count}} this month",
+    "none_this_month": "none this month",
+    "monthly_placements": "Placements by month",
+    "last_12_months": "last 12 months",
+    "quick_actions": "Quick Actions",
+    "new_talent": "New Talent",
+    "new_employer": "New Employer",
+    "new_position": "New Position",
+    "view_applications": "View Applications",
+    "view_pipeline": "View Pipeline",
+    "active_pipeline": "Active Pipeline",
+    "no_active_applications": "No active applications",
+    "unknown_talent": "Unknown talent",
+    "unknown_position": "Unknown position",
+    "my_team": "My Team",
+    "active_team": "{{count}} active",
+    "online": "Online",
+    "total": "{{count}} total"
   },
   "talents": {
     "title": "Talents",
@@ -60,7 +115,15 @@
     "cv_url": "CV URL",
     "preferred_salary": "Preferred salary (min / max)",
     "delete_talent": "Delete Talent",
-    "delete_confirm": "Delete {{name}}?"
+    "delete_confirm": "Delete {{name}}?",
+    "pool": "Talent Pool",
+    "count": "{{filtered}} of {{total}} talents",
+    "search_placeholder": "Search name, email, stack…",
+    "no_talents_found": "No talents found",
+    "linkedin_url": "LinkedIn URL",
+    "salary_min": "Preferred Salary Min",
+    "salary_max": "Preferred Salary Max",
+    "salary_currency": "Salary Currency"
   },
   "employers": {
     "title": "Employers",
@@ -82,7 +145,10 @@
     "talent_source": "Talent Source",
     "both": "Both",
     "delete_employer": "Delete Employer",
-    "delete_confirm": "Delete {{name}}?"
+    "delete_confirm": "Delete {{name}}?",
+    "count": "{{count}} employer",
+    "count_plural": "{{count}} employers",
+    "search_placeholder": "Search company, industry, contact…"
   },
   "positions": {
     "title": "Positions",
@@ -103,7 +169,11 @@
     "description": "Description",
     "apps": "Apps",
     "delete_position": "Delete Position",
-    "delete_confirm": "Delete {{name}}?"
+    "delete_confirm": "Delete {{name}}?",
+    "count": "{{count}} position",
+    "count_plural": "{{count}} positions",
+    "search_placeholder": "Search title, specialization, employer…",
+    "select_employer": "Select employer…"
   },
   "applications": {
     "title": "Applications",
@@ -117,7 +187,12 @@
     "kanban": "Kanban",
     "list": "List",
     "delete_application": "Delete Application",
-    "delete_confirm": "Delete application for {{name}}?"
+    "delete_confirm": "Delete application for {{name}}?",
+    "active_count": "{{count}} active",
+    "active_count_plural": "{{count}} active",
+    "search_placeholder": "Search talent, position, employer…",
+    "employer": "Employer",
+    "empty": "Empty"
   },
   "placements": {
     "title": "Placements",
@@ -136,7 +211,34 @@
     "completed": "Completed",
     "total_commission": "Total Commission",
     "delete_placement": "Delete Placement",
-    "delete_confirm": "Delete placement for {{name}}?"
+    "delete_confirm": "Delete placement for {{name}}?",
+    "count": "{{count}} placement",
+    "count_plural": "{{count}} placements",
+    "search_placeholder": "Search talent, position, employer…",
+    "commission_per_month": "Commission: {{amount}} / month"
+  },
+  "employment_type": {
+    "full_time": "Full Time",
+    "part_time": "Part Time",
+    "contract": "Contract",
+    "freelance": "Freelance"
+  },
+  "work_location": {
+    "remote": "Remote",
+    "hybrid": "Hybrid",
+    "on_site": "On Site"
+  },
+  "contract_type": {
+    "full_time": "Full Time",
+    "part_time": "Part Time",
+    "contract": "Contract"
+  },
+  "level": {
+    "junior": "Junior",
+    "mid": "Mid",
+    "senior": "Senior",
+    "lead": "Lead",
+    "architect": "Architect"
   },
   "status": {
     "available": "Available",

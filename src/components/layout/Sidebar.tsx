@@ -18,26 +18,27 @@ import { getInitials } from '../../lib/utils'
 import { useTheme } from '../../lib/theme'
 import { useTranslation } from 'react-i18next'
 
-type NavItem = { to: string; label: string; icon: React.ElementType; end?: boolean }
+type NavItem = { to: string; labelKey: string; icon: React.ElementType; end?: boolean }
 
 const NAV_MAIN: NavItem[] = [
-  { to: '/', label: 'Dashboard', icon: LayoutDashboard, end: true },
+  { to: '/', labelKey: 'nav.dashboard', icon: LayoutDashboard, end: true },
 ]
 
 const NAV_CLIENTES: NavItem[] = [
-  { to: '/employers', label: 'Empresas', icon: Building2 },
-  { to: '/positions', label: 'Posiciones', icon: Briefcase },
-  { to: '/placements', label: 'Colocaciones', icon: TrendingUp },
+  { to: '/employers', labelKey: 'nav.employers', icon: Building2 },
+  { to: '/positions', labelKey: 'nav.positions', icon: Briefcase },
+  { to: '/placements', labelKey: 'nav.placements', icon: TrendingUp },
 ]
 
 const NAV_TALENTOS: NavItem[] = [
-  { to: '/talents', label: 'Talentos', icon: Users },
-  { to: '/applications', label: 'Aplicaciones', icon: FileText },
+  { to: '/talents', labelKey: 'nav.talents', icon: Users },
+  { to: '/applications', labelKey: 'nav.applications', icon: FileText },
 ]
 
 const TEAM = ['Roberto', 'Reynaldo', 'Santiago'] as const
 
 function NavGroup({ label, items, collapsed }: { label: string; items: NavItem[]; collapsed: boolean }) {
+  const { t } = useTranslation()
   return (
     <div className="mb-1">
       {!collapsed && (
@@ -47,7 +48,9 @@ function NavGroup({ label, items, collapsed }: { label: string; items: NavItem[]
       )}
       {collapsed && <div className="my-2 mx-3 border-t border-white/10" />}
       <ul className="space-y-0.5">
-        {items.map(({ to, label: itemLabel, icon: Icon, end }) => (
+        {items.map(({ to, labelKey, icon: Icon, end }) => {
+          const itemLabel = t(labelKey)
+          return (
           <li key={to}>
             <NavLink
               to={to}
@@ -67,7 +70,7 @@ function NavGroup({ label, items, collapsed }: { label: string; items: NavItem[]
               {!collapsed && itemLabel}
             </NavLink>
           </li>
-        ))}
+        )})}
       </ul>
     </div>
   )
@@ -78,9 +81,13 @@ export function Sidebar() {
   const dark = useTheme((s) => s.dark)
   const toggleSidebar = useTheme((s) => s.toggleSidebar)
   const toggleDark = useTheme((s) => s.toggleDark)
-  const { i18n } = useTranslation()
+  const { t, i18n } = useTranslation()
   const isES = i18n.language === 'es'
-  function toggleLang() { void i18n.changeLanguage(isES ? 'en' : 'es') }
+  function toggleLang() {
+    const nextLanguage = isES ? 'en' : 'es'
+    localStorage.setItem('lation-language', nextLanguage)
+    void i18n.changeLanguage(nextLanguage)
+  }
 
   return (
     <aside
@@ -110,7 +117,9 @@ export function Sidebar() {
       <nav className="flex-1 overflow-y-auto py-3 px-2">
         {/* Dashboard — sin label de sección */}
         <ul className="space-y-0.5">
-          {NAV_MAIN.map(({ to, label, icon: Icon, end }) => (
+          {NAV_MAIN.map(({ to, labelKey, icon: Icon, end }) => {
+            const label = t(labelKey)
+            return (
             <li key={to}>
               <NavLink
                 to={to}
@@ -130,16 +139,16 @@ export function Sidebar() {
                 {!collapsed && label}
               </NavLink>
             </li>
-          ))}
+          )})}
         </ul>
 
-        <NavGroup label="Clientes" items={NAV_CLIENTES} collapsed={collapsed} />
-        <NavGroup label="Talentos" items={NAV_TALENTOS} collapsed={collapsed} />
+        <NavGroup label={t('nav.employers')} items={NAV_CLIENTES} collapsed={collapsed} />
+        <NavGroup label={t('nav.talents')} items={NAV_TALENTOS} collapsed={collapsed} />
 
         {/* Settings — separado al fondo del nav */}
         {!collapsed && (
           <p className="mb-1 mt-4 px-3 text-[10px] font-semibold uppercase tracking-widest text-slate-400">
-            Administración
+            {t('nav.administration', 'Administration')}
           </p>
         )}
         {collapsed && <div className="my-2 mx-3 border-t border-white/10" />}
@@ -147,7 +156,7 @@ export function Sidebar() {
           <li>
             <NavLink
               to="/settings"
-              title={collapsed ? 'Settings' : undefined}
+              title={collapsed ? t('nav.settings', 'Settings') : undefined}
               className={({ isActive }) =>
                 cn(
                   'flex items-center rounded-lg py-2 text-sm transition-colors',
@@ -159,7 +168,7 @@ export function Sidebar() {
               }
             >
               <Settings className="h-4 w-4 flex-shrink-0" />
-              {!collapsed && 'Settings'}
+              {!collapsed && t('nav.settings', 'Settings')}
             </NavLink>
           </li>
         </ul>
@@ -176,7 +185,7 @@ export function Sidebar() {
           )}
         >
           {dark ? <Sun className="h-4 w-4 flex-shrink-0" /> : <Moon className="h-4 w-4 flex-shrink-0" />}
-          {!collapsed && (dark ? 'Modo Claro' : 'Modo Oscuro')}
+          {!collapsed && (dark ? t('common.light_mode', 'Light Mode') : t('common.dark_mode', 'Dark Mode'))}
         </button>
 
         <button

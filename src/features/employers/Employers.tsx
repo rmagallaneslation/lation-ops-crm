@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Plus, Search, Globe, Phone, Mail, Eye } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
+import { useTranslation } from 'react-i18next'
 import { TopBar } from '../../components/layout/TopBar'
 import { Button } from '../../components/ui/button'
 import { Input } from '../../components/ui/input'
@@ -27,6 +28,7 @@ const empty = (): Form => ({
 })
 
 export function Employers() {
+  const { t } = useTranslation()
   const employers = useLationStore((s) => s.employers)
   const positions = useLationStore((s) => s.positions)
   const addEmployer = useLationStore((s) => s.addEmployer)
@@ -69,11 +71,11 @@ export function Employers() {
   return (
     <div className="flex flex-col h-full">
       <TopBar
-        title="Employers"
-        subtitle={`${filtered.length} employer${filtered.length !== 1 ? 's' : ''}`}
+        title={t('employers.title')}
+        subtitle={t(filtered.length === 1 ? 'employers.count' : 'employers.count_plural', { count: filtered.length })}
         action={
           <Button size="sm" onClick={openAdd}>
-            <Plus className="h-4 w-4" /> Add Employer
+            <Plus className="h-4 w-4" /> {t('employers.add')}
           </Button>
         }
       />
@@ -81,34 +83,34 @@ export function Employers() {
         <div className="mb-5 flex flex-wrap gap-3">
           <div className="relative flex-1 min-w-52">
             <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
-            <Input className="pl-9" placeholder="Search company, industry, contact…" value={search} onChange={(e) => setSearch(e.target.value)} />
+            <Input className="pl-9" placeholder={t('employers.search_placeholder')} value={search} onChange={(e) => setSearch(e.target.value)} />
           </div>
           <Select value={filterEmployerType} onChange={(e) => setFilterEmployerType(e.target.value)} className="w-44">
-            <option value="">All Types</option>
-            <option value="hiring_company">Hiring Company</option>
-            <option value="talent_source">Talent Source</option>
-            <option value="both">Both</option>
+            <option value="">{t('common.all_types')}</option>
+            <option value="hiring_company">{t('employers.hiring_company')}</option>
+            <option value="talent_source">{t('employers.talent_source')}</option>
+            <option value="both">{t('employers.both')}</option>
           </Select>
           <Select value={filterCountry} onChange={(e) => setFilterCountry(e.target.value)} className="w-40">
-            <option value="">All Countries</option>
+            <option value="">{t('common.all_countries')}</option>
             {countries.map((c) => <option key={c} value={c}>{c}</option>)}
           </Select>
           <Select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} className="w-40">
-            <option value="">All Statuses</option>
-            <option value="active">Active</option>
-            <option value="prospect">Prospect</option>
-            <option value="inactive">Inactive</option>
+            <option value="">{t('common.all_statuses')}</option>
+            <option value="active">{t('status.active')}</option>
+            <option value="prospect">{t('status.prospect')}</option>
+            <option value="inactive">{t('status.inactive')}</option>
           </Select>
         </div>
 
         {filtered.length === 0 ? (
-          <EmptyState title="No employers found" action={{ label: 'Add Employer', onClick: openAdd }} />
+          <EmptyState title={t('employers.no_employers')} action={{ label: t('employers.add'), onClick: openAdd }} />
         ) : (
           <div className="rounded-xl border border-slate-200 bg-white overflow-hidden dark:border-slate-700 dark:bg-slate-800">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-slate-100 bg-slate-50 dark:border-slate-700 dark:bg-slate-900">
-                  {['Company', 'Type', 'Country', 'Contact', 'Open Positions', 'Status', ''].map((h) => (
+                  {[t('common.company'), t('common.type'), t('employers.country'), t('common.contact'), t('common.open_positions'), t('common.status'), ''].map((h) => (
                     <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-400">{h}</th>
                   ))}
                 </tr>
@@ -129,13 +131,13 @@ export function Employers() {
                               <a href={e.website} target="_blank" rel="noopener noreferrer"
                                 onClick={(ev) => ev.stopPropagation()}
                                 className="flex items-center gap-1 text-xs text-blue-500 hover:underline">
-                                <Globe className="h-3 w-3" /> website
+                                <Globe className="h-3 w-3" /> {t('common.website')}
                               </a>
                             )}
                           </div>
                         </div>
                       </td>
-                      <td className="px-4 py-3 text-xs text-slate-600 dark:text-slate-300 capitalize">{e.employer_type.replace('_', ' ')}</td>
+                      <td className="px-4 py-3 text-xs text-slate-600 dark:text-slate-300 capitalize">{t(`employers.${e.employer_type}`)}</td>
                       <td className="px-4 py-3 text-slate-600 dark:text-slate-300">{e.country}</td>
                       <td className="px-4 py-3">
                         <p className="font-medium text-slate-800 dark:text-slate-200 text-xs">{e.contact_name}</p>
@@ -162,14 +164,14 @@ export function Employers() {
                       </td>
                       <td className="px-4 py-3">
                         <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${STATUS_COLORS[e.status]}`}>
-                          {e.status}
+                          {t(`status.${e.status}`)}
                         </span>
                       </td>
                       <td className="px-4 py-3" onClick={(ev) => ev.stopPropagation()}>
                         <button
                           onClick={() => navigate(`/employers/${e.id}`)}
                           className="flex items-center gap-1 text-xs text-slate-400 hover:text-orange-600 transition-colors"
-                          title="Ver empresa"
+                          title={t('employers.view_employer', 'View employer')}
                         >
                           <Eye className="h-3.5 w-3.5" />
                         </button>
@@ -183,79 +185,79 @@ export function Employers() {
         )}
       </div>
 
-      <Dialog open={open} onClose={() => setOpen(false)} title={editing ? 'Edit Employer' : 'Add Employer'} className="max-w-2xl">
+      <Dialog open={open} onClose={() => setOpen(false)} title={editing ? t('employers.edit') : t('employers.add')} className="max-w-2xl">
         <div className="grid grid-cols-2 gap-4">
           <div className="col-span-2 space-y-1">
-            <Label>Company Name *</Label>
+            <Label>{t('employers.company_name')} *</Label>
             <Input value={form.company_name} onChange={(e) => set('company_name', e.target.value)} placeholder="Accenture" />
           </div>
           <div className="space-y-1">
-            <Label>Industry</Label>
+            <Label>{t('employers.industry')}</Label>
             <Input value={form.industry} onChange={(e) => set('industry', e.target.value)} placeholder="Fintech, Consulting…" />
           </div>
           <div className="space-y-1">
-            <Label>Country</Label>
+            <Label>{t('employers.country')}</Label>
             <Input value={form.country} onChange={(e) => set('country', e.target.value)} placeholder="USA, Mexico…" />
           </div>
           <div className="space-y-1">
-            <Label>Company Email</Label>
+            <Label>{t('employers.email')}</Label>
             <Input type="email" value={form.email} onChange={(e) => set('email', e.target.value)} />
           </div>
           <div className="space-y-1">
-            <Label>Phone</Label>
+            <Label>{t('employers.phone')}</Label>
             <Input value={form.phone ?? ''} onChange={(e) => set('phone', e.target.value)} />
           </div>
           <div className="col-span-2 space-y-1">
-            <Label>Website</Label>
+            <Label>{t('employers.website')}</Label>
             <Input type="url" value={form.website ?? ''} onChange={(e) => set('website', e.target.value)} placeholder="https://…" />
           </div>
           <div className="space-y-1">
-            <Label>Contact Name</Label>
+            <Label>{t('employers.contact_name')}</Label>
             <Input value={form.contact_name} onChange={(e) => set('contact_name', e.target.value)} />
           </div>
           <div className="space-y-1">
-            <Label>Contact Email</Label>
+            <Label>{t('employers.contact_email')}</Label>
             <Input type="email" value={form.contact_email} onChange={(e) => set('contact_email', e.target.value)} />
           </div>
           <div className="space-y-1">
-            <Label>Contact Phone</Label>
+            <Label>{t('employers.contact_phone')}</Label>
             <Input value={form.contact_phone ?? ''} onChange={(e) => set('contact_phone', e.target.value)} />
           </div>
           <div className="space-y-1">
-            <Label>Employer Type</Label>
+            <Label>{t('employers.employer_type')}</Label>
             <Select value={form.employer_type} onChange={(e) => set('employer_type', e.target.value as EmployerType)}>
-              <option value="hiring_company">Hiring Company</option>
-              <option value="talent_source">Talent Source</option>
-              <option value="both">Both</option>
+              <option value="hiring_company">{t('employers.hiring_company')}</option>
+              <option value="talent_source">{t('employers.talent_source')}</option>
+              <option value="both">{t('employers.both')}</option>
             </Select>
           </div>
           <div className="space-y-1">
-            <Label>Status</Label>
+            <Label>{t('common.status')}</Label>
             <Select value={form.status} onChange={(e) => set('status', e.target.value as EmployerStatus)}>
-              <option value="active">Active</option>
-              <option value="prospect">Prospect</option>
-              <option value="inactive">Inactive</option>
+              <option value="active">{t('status.active')}</option>
+              <option value="prospect">{t('status.prospect')}</option>
+              <option value="inactive">{t('status.inactive')}</option>
             </Select>
           </div>
         </div>
         <div className="mt-6 flex justify-between">
           {editing && (
-            <Button variant="danger" size="sm" onClick={() => { setOpen(false); setConfirmDelete(editing) }}>Delete</Button>
+            <Button variant="danger" size="sm" onClick={() => { setOpen(false); setConfirmDelete(editing) }}>{t('common.delete')}</Button>
           )}
           <div className="ml-auto flex gap-2">
-            <Button variant="secondary" size="sm" onClick={() => setOpen(false)}>Cancel</Button>
-            <Button size="sm" onClick={handleSave}>Save</Button>
+            <Button variant="secondary" size="sm" onClick={() => setOpen(false)}>{t('common.cancel')}</Button>
+            <Button size="sm" onClick={handleSave}>{t('common.save')}</Button>
           </div>
         </div>
       </Dialog>
 
-      <Dialog open={!!confirmDelete} onClose={() => setConfirmDelete(null)} title="Delete Employer">
+      <Dialog open={!!confirmDelete} onClose={() => setConfirmDelete(null)} title={t('employers.delete_employer')}>
         <p className="text-sm text-slate-600 dark:text-slate-300">
-          Delete <span className="font-semibold">{confirmDelete?.company_name}</span>? This cannot be undone.
+          {t('employers.delete_confirm', { name: confirmDelete?.company_name ?? '' })} {t('common.cannot_be_undone')}
         </p>
         <div className="mt-6 flex justify-end gap-2">
-          <Button variant="secondary" size="sm" onClick={() => setConfirmDelete(null)}>Cancel</Button>
-          <Button variant="danger" size="sm" onClick={() => { deleteEmployer(confirmDelete!.id); setConfirmDelete(null) }}>Yes, Delete</Button>
+          <Button variant="secondary" size="sm" onClick={() => setConfirmDelete(null)}>{t('common.cancel')}</Button>
+          <Button variant="danger" size="sm" onClick={() => { deleteEmployer(confirmDelete!.id); setConfirmDelete(null) }}>{t('common.yes_delete')}</Button>
         </div>
       </Dialog>
     </div>

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { Search, Users, Building2, Briefcase, X } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { useLationStore } from '../../store/useLationStore'
 
 type Result = {
@@ -24,6 +25,7 @@ const TYPE_LABEL = {
 }
 
 export function SearchModal() {
+  const { t } = useTranslation()
   const [open, setOpen] = useState(false)
   const [query, setQuery] = useState('')
   const inputRef = useRef<HTMLInputElement>(null)
@@ -87,7 +89,7 @@ export function SearchModal() {
       .map((p) => ({
         id: p.id, type: 'position' as const,
         label: p.title,
-        sub: `${p.level} · ${p.status.replace('_', ' ')}`,
+        sub: `${t(`level.${p.level}`)} · ${t(`status.${p.status}`)}`,
         href: `/positions`,
       })),
   ]
@@ -109,7 +111,7 @@ export function SearchModal() {
         className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-400 hover:border-slate-300 hover:text-slate-600 transition-colors dark:border-slate-700 dark:bg-slate-800 dark:hover:text-slate-300"
       >
         <Search className="h-3.5 w-3.5" />
-        <span>Buscar...</span>
+        <span>{t('common.search')}...</span>
         <kbd className="ml-2 rounded border border-slate-200 bg-slate-100 px-1.5 py-0.5 text-[10px] text-slate-400 dark:border-slate-600 dark:bg-slate-700">
           ⌘K
         </kbd>
@@ -134,7 +136,7 @@ export function SearchModal() {
             ref={inputRef}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Buscar talentos, empresas, posiciones..."
+            placeholder={t('common.global_search_placeholder', 'Search talents, employers, positions...')}
             className="flex-1 bg-transparent text-sm text-slate-900 placeholder-slate-400 outline-none dark:text-slate-100"
           />
           <button onClick={() => setOpen(false)} className="flex-shrink-0 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">
@@ -145,16 +147,16 @@ export function SearchModal() {
         {/* Results */}
         <div className="max-h-80 overflow-y-auto py-2">
           {query.length > 0 && groups.length === 0 ? (
-            <p className="px-4 py-6 text-center text-sm text-slate-400">Sin resultados para "{query}"</p>
+            <p className="px-4 py-6 text-center text-sm text-slate-400">{t('common.no_results_for', { query, defaultValue: `No results for "${query}"` })}</p>
           ) : query.length === 0 ? (
-            <p className="px-4 py-6 text-center text-sm text-slate-400">Escribe para buscar...</p>
+            <p className="px-4 py-6 text-center text-sm text-slate-400">{t('common.type_to_search', 'Type to search...')}</p>
           ) : (
             groups.map(({ type, items }) => {
               const Icon = TYPE_ICON[type]
               return (
                 <div key={type}>
                   <p className="px-4 py-1.5 text-[10px] font-semibold uppercase tracking-widest text-slate-400">
-                    {TYPE_LABEL[type]}
+                    {t(`nav.${type === 'talent' ? 'talents' : type === 'employer' ? 'employers' : 'positions'}`, TYPE_LABEL[type])}
                   </p>
                   {items.map((r) => (
                     <button

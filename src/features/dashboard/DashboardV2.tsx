@@ -3,6 +3,7 @@ import {
   UserPlus, PlusSquare, ClipboardList, FileSearch,
 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { useLationStore } from '../../store/useLationStore'
 import { getInitials, colorHash } from '../../lib/utils'
 
@@ -85,6 +86,7 @@ function QuickAction({ icon: Icon, label, onClick }: { icon: React.ElementType; 
 }
 
 export function DashboardV2() {
+  const { t } = useTranslation()
   const talents = useLationStore((s) => s.talents)
   const employers = useLationStore((s) => s.employers)
   const positions = useLationStore((s) => s.positions)
@@ -117,14 +119,16 @@ export function DashboardV2() {
   }).length
   const placementsDelta = placementsThisMonth - placementsLastMonth
   const placementsDeltaStr = placementsDelta === 0
-    ? 'igual que el mes pasado'
-    : `${placementsDelta > 0 ? '+' : ''}${placementsDelta} vs mes pasado`
+    ? t('dashboard.same_as_last_month')
+    : t('dashboard.vs_last_month', { count: `${placementsDelta > 0 ? '+' : ''}${placementsDelta}` })
 
   const prospectsThisMonth = talents.filter((t) => {
     const d = new Date(t.created_at ?? '')
     return t.status === 'prospect' && d.getFullYear() === thisYear && d.getMonth() === thisMonth
   }).length
-  const prospectsDeltaStr = prospectsThisMonth > 0 ? `+${prospectsThisMonth} este mes` : 'ninguno este mes'
+  const prospectsDeltaStr = prospectsThisMonth > 0
+    ? t('dashboard.this_month', { count: `+${prospectsThisMonth}` })
+    : t('dashboard.none_this_month')
 
   // Chart — colocaciones por mes (últimos 12 meses)
   const chartData = Array.from({ length: 12 }, (_, i) => {
@@ -161,8 +165,8 @@ export function DashboardV2() {
       {/* Header */}
       <div className="flex items-center justify-between border-b border-slate-200 bg-white px-6 py-4 dark:border-slate-700 dark:bg-slate-800">
         <div>
-          <h1 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Hola, equipo LATION 👋</h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400">¿En qué están trabajando hoy?</p>
+          <h1 className="text-lg font-semibold text-slate-900 dark:text-slate-100">{t('dashboard.hello')}</h1>
+          <p className="text-sm text-slate-500 dark:text-slate-400">{t('dashboard.prompt')}</p>
         </div>
       </div>
 
@@ -171,13 +175,13 @@ export function DashboardV2() {
         {/* KPI Row */}
         <div className="grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-6">
           {/* Clientes KPIs */}
-          <KpiCard label="Empresas activas" value={activeEmployers} sub={`${employers.length} total`} icon={Building2} />
-          <KpiCard label="Posiciones abiertas" value={openPositions} sub={`${positions.length} total`} icon={Briefcase} />
+          <KpiCard label={t('dashboard.active_employers')} value={activeEmployers} sub={t('dashboard.total', { count: employers.length })} icon={Building2} />
+          <KpiCard label={t('dashboard.open_positions')} value={openPositions} sub={t('dashboard.total', { count: positions.length })} icon={Briefcase} />
           {/* Talentos KPIs */}
-          <KpiCard label="Prospectos" value={prospects} sub="nuevos talentos" icon={UserPlus} delta={prospectsDeltaStr} />
-          <KpiCard label="En proceso" value={inProcess} sub="en pipeline" icon={Users} />
-          <KpiCard label="Colocados activos" value={activePlacements} sub="en clientes" icon={TrendingUp} delta={placementsDeltaStr} />
-          <KpiCard label="Comisión total" value={`$${totalCommission.toLocaleString()}`} sub="acumulada" icon={DollarSign} deltaPositive />
+          <KpiCard label={t('dashboard.prospects')} value={prospects} sub={t('dashboard.new_talents')} icon={UserPlus} delta={prospectsDeltaStr} />
+          <KpiCard label={t('status.in_process')} value={inProcess} sub={t('dashboard.in_pipeline')} icon={Users} />
+          <KpiCard label={t('dashboard.active_placements_kpi')} value={activePlacements} sub={t('dashboard.with_clients')} icon={TrendingUp} delta={placementsDeltaStr} />
+          <KpiCard label={t('dashboard.total_commission')} value={`$${totalCommission.toLocaleString()}`} sub={t('dashboard.accumulated')} icon={DollarSign} deltaPositive />
         </div>
 
         {/* Chart + Quick Actions */}
@@ -185,22 +189,22 @@ export function DashboardV2() {
           {/* Chart */}
           <div className="lg:col-span-2 rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-800">
             <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Colocaciones por mes</h2>
-              <span className="text-xs text-slate-400">últimos 12 meses</span>
+              <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{t('dashboard.monthly_placements')}</h2>
+              <span className="text-xs text-slate-400">{t('dashboard.last_12_months')}</span>
             </div>
             <SimpleBarChart data={chartData} />
           </div>
 
           {/* Quick Actions */}
           <div className="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-800">
-            <h2 className="mb-4 text-sm font-semibold text-slate-900 dark:text-slate-100">Acciones rápidas</h2>
+            <h2 className="mb-4 text-sm font-semibold text-slate-900 dark:text-slate-100">{t('dashboard.quick_actions')}</h2>
             <div className="grid grid-cols-2 gap-3">
-              <QuickAction icon={UserPlus} label="Nuevo talento" onClick={() => navigate('/talents')} />
-              <QuickAction icon={Building2} label="Nueva empresa" onClick={() => navigate('/employers')} />
-              <QuickAction icon={PlusSquare} label="Nueva posición" onClick={() => navigate('/positions')} />
-              <QuickAction icon={ClipboardList} label="Ver aplicaciones" onClick={() => navigate('/applications')} />
-              <QuickAction icon={TrendingUp} label="Colocaciones" onClick={() => navigate('/placements')} />
-              <QuickAction icon={FileSearch} label="Ver pipeline" onClick={() => navigate('/applications')} />
+              <QuickAction icon={UserPlus} label={t('dashboard.new_talent')} onClick={() => navigate('/talents')} />
+              <QuickAction icon={Building2} label={t('dashboard.new_employer')} onClick={() => navigate('/employers')} />
+              <QuickAction icon={PlusSquare} label={t('dashboard.new_position')} onClick={() => navigate('/positions')} />
+              <QuickAction icon={ClipboardList} label={t('dashboard.view_applications')} onClick={() => navigate('/applications')} />
+              <QuickAction icon={TrendingUp} label={t('nav.placements')} onClick={() => navigate('/placements')} />
+              <QuickAction icon={FileSearch} label={t('dashboard.view_pipeline')} onClick={() => navigate('/applications')} />
             </div>
           </div>
         </div>
@@ -211,14 +215,14 @@ export function DashboardV2() {
           <div className="lg:col-span-2 rounded-xl border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800">
             <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4 dark:border-slate-700">
               <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
-                Pipeline activo <span className="ml-1.5 rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-600 dark:bg-slate-700 dark:text-slate-300">{recentApps.length}</span>
+                {t('dashboard.active_pipeline')} <span className="ml-1.5 rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-600 dark:bg-slate-700 dark:text-slate-300">{recentApps.length}</span>
               </h2>
               <button onClick={() => navigate('/applications')} className="text-xs text-orange-600 hover:underline dark:text-orange-400">
-                Ver todo
+                {t('common.view_all')}
               </button>
             </div>
             {recentApps.length === 0 ? (
-              <p className="px-5 py-8 text-center text-sm text-slate-400">No hay aplicaciones activas</p>
+              <p className="px-5 py-8 text-center text-sm text-slate-400">{t('dashboard.no_active_applications')}</p>
             ) : (
               <div className="divide-y divide-slate-100 dark:divide-slate-700">
                 {recentApps.map((app) => (
@@ -228,14 +232,14 @@ export function DashboardV2() {
                     </div>
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-medium text-slate-900 dark:text-slate-100">
-                        {app.talent?.full_name ?? 'Talento desconocido'}
+                        {app.talent?.full_name ?? t('dashboard.unknown_talent')}
                       </p>
                       <p className="truncate text-xs text-slate-400">
-                        {app.position?.title ?? 'Posición desconocida'} · {app.employer?.company_name ?? ''}
+                        {app.position?.title ?? t('dashboard.unknown_position')} · {app.employer?.company_name ?? ''}
                       </p>
                     </div>
                     <span className={`flex-shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${STATUS_COLORS[app.status] ?? ''}`}>
-                      {app.status.replace(/_/g, ' ')}
+                      {t(`status.${app.status}`)}
                     </span>
                   </div>
                 ))}
@@ -246,8 +250,8 @@ export function DashboardV2() {
           {/* Team */}
           <div className="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-800">
             <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Mi equipo</h2>
-              <span className="text-xs text-slate-400">3 activos</span>
+              <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{t('dashboard.my_team')}</h2>
+              <span className="text-xs text-slate-400">{t('dashboard.active_team', { count: 3 })}</span>
             </div>
             <div className="space-y-3">
               {TEAM.map((member) => (
@@ -260,7 +264,7 @@ export function DashboardV2() {
                     <p className="text-xs text-slate-400">{member.role}</p>
                   </div>
                   <span className="flex-shrink-0 rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400">
-                    Online
+                    {t('dashboard.online')}
                   </span>
                 </div>
               ))}

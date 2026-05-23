@@ -3,6 +3,7 @@ import { ArrowLeft, Globe, Mail, Phone, MapPin, Briefcase, Users, ExternalLink }
 import { useLationStore } from '../../store/useLationStore'
 import { getInitials, colorHash } from '../../lib/utils'
 import { format } from 'date-fns'
+import { useTranslation } from 'react-i18next'
 
 const EMPLOYER_STATUS: Record<string, string> = {
   active:   'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400',
@@ -38,6 +39,7 @@ function InfoRow({ icon: Icon, label, value, href }: {
 }
 
 export function EmployerDetail() {
+  const { t } = useTranslation()
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
 
@@ -49,9 +51,9 @@ export function EmployerDetail() {
   if (!employer) {
     return (
       <div className="flex flex-col items-center justify-center h-full gap-4">
-        <p className="text-slate-500">Empresa no encontrada.</p>
+        <p className="text-slate-500">{t('employers.not_found', 'Employer not found.')}</p>
         <button onClick={() => navigate('/employers')} className="text-sm text-orange-600 hover:underline">
-          Volver a Empresas
+          {t('employers.back_to_employers', 'Back to Employers')}
         </button>
       </div>
     )
@@ -70,7 +72,7 @@ export function EmployerDetail() {
           className="flex items-center gap-2 text-sm text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />
-          Empresas
+          {t('employers.title')}
         </button>
       </div>
 
@@ -90,7 +92,7 @@ export function EmployerDetail() {
                     <p className="text-sm text-slate-500 mt-0.5">{employer.industry} · {employer.country}</p>
                   </div>
                   <span className={`flex-shrink-0 rounded-full px-3 py-1 text-xs font-semibold capitalize ${EMPLOYER_STATUS[employer.status]}`}>
-                    {employer.status}
+                    {t(`status.${employer.status}`)}
                   </span>
                 </div>
               </div>
@@ -100,10 +102,10 @@ export function EmployerDetail() {
           {/* Stats Row */}
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
             {[
-              { label: 'Posiciones totales', value: allPositions.length, icon: Briefcase },
-              { label: 'Posiciones abiertas', value: openPositions.length, icon: Briefcase },
-              { label: 'Talentos colocados', value: placements.length, icon: Users },
-              { label: 'Comisión total', value: `$${totalCommission.toLocaleString()}`, icon: Users },
+              { label: t('positions.title'), value: allPositions.length, icon: Briefcase },
+              { label: t('common.open_positions'), value: openPositions.length, icon: Briefcase },
+              { label: t('dashboard.active_placements_kpi'), value: placements.length, icon: Users },
+              { label: t('dashboard.total_commission'), value: `$${totalCommission.toLocaleString()}`, icon: Users },
             ].map((s) => (
               <div key={s.label} className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-700 dark:bg-slate-800">
                 <p className="text-xs text-slate-400">{s.label}</p>
@@ -115,22 +117,22 @@ export function EmployerDetail() {
           {/* Info + Contact */}
           <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
             <div className="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-800">
-              <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-400">Empresa</h2>
+              <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-400">{t('common.company')}</h2>
               <div className="divide-y divide-slate-100 dark:divide-slate-700">
                 <InfoRow icon={Mail} label="Email" value={employer.email} href={`mailto:${employer.email}`} />
-                <InfoRow icon={Phone} label="Teléfono" value={employer.phone} />
-                <InfoRow icon={Globe} label="Website" value={employer.website} href={employer.website ?? undefined} />
-                <InfoRow icon={MapPin} label="País" value={employer.country} />
-                <InfoRow icon={Briefcase} label="Tipo" value={employer.employer_type.replace(/_/g, ' ')} />
+                <InfoRow icon={Phone} label={t('employers.phone')} value={employer.phone} />
+                <InfoRow icon={Globe} label={t('employers.website')} value={employer.website} href={employer.website ?? undefined} />
+                <InfoRow icon={MapPin} label={t('employers.country')} value={employer.country} />
+                <InfoRow icon={Briefcase} label={t('common.type')} value={t(`employers.${employer.employer_type}`)} />
               </div>
             </div>
 
             <div className="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-800">
-              <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-400">Contacto</h2>
+              <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-400">{t('common.contact')}</h2>
               <div className="divide-y divide-slate-100 dark:divide-slate-700">
-                <InfoRow icon={Users} label="Nombre" value={employer.contact_name} />
+                <InfoRow icon={Users} label={t('employers.contact_name')} value={employer.contact_name} />
                 <InfoRow icon={Mail} label="Email" value={employer.contact_email} href={`mailto:${employer.contact_email}`} />
-                <InfoRow icon={Phone} label="Teléfono" value={employer.contact_phone} />
+                <InfoRow icon={Phone} label={t('employers.contact_phone')} value={employer.contact_phone} />
               </div>
             </div>
           </div>
@@ -140,7 +142,7 @@ export function EmployerDetail() {
             <div className="rounded-xl border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800">
               <div className="border-b border-slate-100 dark:border-slate-700 px-5 py-4 flex items-center justify-between">
                 <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
-                  Posiciones
+                  {t('positions.title')}
                   <span className="ml-2 rounded-full bg-slate-100 dark:bg-slate-700 px-2 py-0.5 text-xs text-slate-500">{allPositions.length}</span>
                 </h2>
               </div>
@@ -150,7 +152,7 @@ export function EmployerDetail() {
                     <div className="min-w-0 flex-1">
                       <p className="text-sm font-medium text-slate-900 dark:text-slate-100">{pos.title}</p>
                       <p className="text-xs text-slate-400">
-                        {pos.level} · {pos.work_location.replace('_', ' ')} · {pos.contract_type.replace('_', ' ')}
+                        {t(`level.${pos.level}`)} · {t(`work_location.${pos.work_location}`)} · {t(`contract_type.${pos.contract_type}`)}
                       </p>
                     </div>
                     {pos.salary_min && pos.salary_max && (
@@ -159,7 +161,7 @@ export function EmployerDetail() {
                       </p>
                     )}
                     <span className={`flex-shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${POSITION_STATUS[pos.status]}`}>
-                      {pos.status.replace('_', ' ')}
+                      {t(`status.${pos.status}`)}
                     </span>
                   </div>
                 ))}
@@ -171,7 +173,7 @@ export function EmployerDetail() {
           {placements.length > 0 && (
             <div className="rounded-xl border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800">
               <div className="border-b border-slate-100 dark:border-slate-700 px-5 py-4">
-                <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Talentos Colocados</h2>
+                <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{t('dashboard.active_placements_kpi')}</h2>
               </div>
               <div className="divide-y divide-slate-100 dark:divide-slate-700">
                 {placements.map((pl) => {
@@ -183,7 +185,7 @@ export function EmployerDetail() {
                       </div>
                       <div className="min-w-0 flex-1">
                         <p className="text-sm font-medium text-slate-900 dark:text-slate-100">{talent?.full_name ?? '—'}</p>
-                        <p className="text-xs text-slate-400">Inicio: {format(new Date(pl.start_date), 'dd MMM yyyy')}</p>
+                        <p className="text-xs text-slate-400">{t('common.start')}: {format(new Date(pl.start_date), 'dd MMM yyyy')}</p>
                       </div>
                       <div className="text-right flex-shrink-0">
                         <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">

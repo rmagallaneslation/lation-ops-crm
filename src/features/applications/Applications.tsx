@@ -22,6 +22,7 @@ import {
   type DragStartEvent,
 } from '@dnd-kit/core'
 import toast from 'react-hot-toast'
+import { useTranslation } from 'react-i18next'
 
 const COLUMNS: { status: ApplicationStatus; label: string; color: string }[] = [
   { status: 'applied', label: 'Applied', color: 'bg-slate-100 dark:bg-slate-800' },
@@ -80,6 +81,7 @@ const empty = (): Form => ({
 })
 
 export function Applications() {
+  const { t } = useTranslation()
   const applications = useLationStore((s) => s.applications)
   const talents = useLationStore((s) => s.talents)
   const positions = useLationStore((s) => s.positions)
@@ -116,7 +118,7 @@ export function Applications() {
     const app = applications.find((a) => a.id === active.id)
     if (app && app.status !== newStatus) {
       updateApplication(app.id, { status: newStatus })
-      toast.success(`Moved to ${newStatus.replace('_', ' ')}`)
+      toast.success(t('applications.moved_to', { status: t(`status.${newStatus}`), defaultValue: `Moved to ${t(`status.${newStatus}`)}` }))
     }
   }
 
@@ -174,22 +176,22 @@ export function Applications() {
   return (
     <div className="flex flex-col h-full">
       <TopBar
-        title="Applications"
-        subtitle={`${filtered.length} active`}
+        title={t('applications.title')}
+        subtitle={t(filtered.length === 1 ? 'applications.active_count' : 'applications.active_count_plural', { count: filtered.length })}
         action={
           <div className="flex items-center gap-2">
             <div className="flex rounded-lg border border-slate-200 dark:border-slate-700 overflow-hidden">
               <button onClick={() => setViewMode('kanban')}
                 className={`px-3 py-1.5 text-xs font-medium transition-colors ${viewMode === 'kanban' ? 'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900' : 'text-slate-600 hover:bg-slate-50 dark:text-slate-400 dark:hover:bg-slate-800'}`}>
-                Kanban
+                {t('applications.kanban')}
               </button>
               <button onClick={() => setViewMode('list')}
                 className={`px-3 py-1.5 text-xs font-medium transition-colors ${viewMode === 'list' ? 'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900' : 'text-slate-600 hover:bg-slate-50 dark:text-slate-400 dark:hover:bg-slate-800'}`}>
-                List
+                {t('applications.list')}
               </button>
             </div>
             <Button size="sm" onClick={openAdd}>
-              <Plus className="h-4 w-4" /> Add
+              <Plus className="h-4 w-4" /> {t('applications.add')}
             </Button>
           </div>
         }
@@ -198,7 +200,7 @@ export function Applications() {
         <div className="px-6 pt-5 pb-3">
           <div className="relative max-w-sm">
             <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
-            <Input className="pl-9" placeholder="Search talent, position, employer…" value={search} onChange={(e) => setSearch(e.target.value)} />
+            <Input className="pl-9" placeholder={t('applications.search_placeholder')} value={search} onChange={(e) => setSearch(e.target.value)} />
           </div>
         </div>
 
@@ -211,12 +213,12 @@ export function Applications() {
                   return (
                     <div key={col.status} className="flex flex-col w-56 flex-shrink-0">
                       <div className="flex items-center justify-between mb-3">
-                        <span className="text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wide">{col.label}</span>
+                        <span className="text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wide">{t(`status.${col.status}`)}</span>
                         <span className="text-xs text-slate-400 dark:text-slate-500">{colApps.length}</span>
                       </div>
                       <DroppableColumn id={col.status} className={`flex-1 rounded-xl p-3 space-y-2.5 overflow-y-auto ${col.color}`}>
                         {colApps.length === 0 ? (
-                          <p className="text-xs text-slate-400 dark:text-slate-600 text-center py-4">Empty</p>
+                          <p className="text-xs text-slate-400 dark:text-slate-600 text-center py-4">{t('applications.empty')}</p>
                         ) : (
                           colApps.map((a) => (
                             <DraggableCard key={a.id} id={a.id}>
@@ -241,13 +243,13 @@ export function Applications() {
         ) : (
           <div className="flex-1 overflow-y-auto px-6 pb-6">
             {filtered.length === 0 ? (
-              <EmptyState title="No applications found" action={{ label: 'Add Application', onClick: openAdd }} />
+              <EmptyState title={t('applications.no_applications')} action={{ label: t('applications.add'), onClick: openAdd }} />
             ) : (
               <div className="rounded-xl border border-slate-200 bg-white overflow-hidden dark:border-slate-700 dark:bg-slate-800">
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b border-slate-100 bg-slate-50 dark:border-slate-700 dark:bg-slate-900">
-                      {['Talent', 'Position', 'Employer', 'Status', 'Applied'].map((h) => (
+                      {[t('applications.talent'), t('applications.position'), t('applications.employer'), t('common.status'), t('applications.applied')].map((h) => (
                         <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-400">{h}</th>
                       ))}
                     </tr>
@@ -265,7 +267,7 @@ export function Applications() {
                           <td className="px-4 py-3">
                             <span className="flex items-center gap-1.5">
                               <span className={`h-2 w-2 rounded-full ${STATUS_DOT[a.status]}`} />
-                              <span className="text-xs capitalize text-slate-600 dark:text-slate-300">{a.status.replace(/_/g, ' ')}</span>
+                              <span className="text-xs capitalize text-slate-600 dark:text-slate-300">{t(`status.${a.status}`)}</span>
                             </span>
                           </td>
                           <td className="px-4 py-3 text-xs text-slate-500 dark:text-slate-400">
@@ -282,61 +284,61 @@ export function Applications() {
         )}
       </div>
 
-      <Dialog open={open} onClose={() => setOpen(false)} title={editing ? 'Edit Application' : 'Add Application'} className="max-w-lg">
+      <Dialog open={open} onClose={() => setOpen(false)} title={editing ? t('applications.edit') : t('applications.add')} className="max-w-lg">
         <div className="space-y-4">
           <div className="space-y-1">
-            <Label>Talent *</Label>
+            <Label>{t('applications.talent')} *</Label>
             <Select value={form.talent_id} onChange={(e) => set('talent_id', e.target.value)}>
-              <option value="">Select talent…</option>
+              <option value="">{t('common.select_talent')}</option>
               {talents.map((t) => <option key={t.id} value={t.id}>{t.full_name}</option>)}
             </Select>
           </div>
           <div className="space-y-1">
-            <Label>Position *</Label>
+            <Label>{t('applications.position')} *</Label>
             <Select value={form.position_id} onChange={(e) => set('position_id', e.target.value)}>
-              <option value="">Select position…</option>
+              <option value="">{t('common.select_position')}</option>
               {positions.map((p) => <option key={p.id} value={p.id}>{p.title} — {employerMap[p.employer_id]?.company_name}</option>)}
             </Select>
           </div>
           <div className="space-y-1">
-            <Label>Status</Label>
+            <Label>{t('common.status')}</Label>
             <Select value={form.status} onChange={(e) => set('status', e.target.value as ApplicationStatus)}>
-              <option value="applied">Applied</option>
-              <option value="screening">Screening</option>
-              <option value="interview">Interview</option>
-              <option value="reviewed">Reviewed</option>
-              <option value="offer_sent">Offer Sent</option>
-              <option value="accepted">Accepted</option>
-              <option value="rejected">Rejected</option>
+              <option value="applied">{t('status.applied')}</option>
+              <option value="screening">{t('status.screening')}</option>
+              <option value="interview">{t('status.interview')}</option>
+              <option value="reviewed">{t('status.reviewed')}</option>
+              <option value="offer_sent">{t('status.offer_sent')}</option>
+              <option value="accepted">{t('status.accepted')}</option>
+              <option value="rejected">{t('status.rejected')}</option>
             </Select>
           </div>
           <div className="space-y-1">
-            <Label>Interview Date</Label>
+            <Label>{t('applications.interview_date')}</Label>
             <Input type="datetime-local" value={form.interview_scheduled_at?.slice(0, 16) ?? ''} onChange={(e) => set('interview_scheduled_at', e.target.value ? new Date(e.target.value).toISOString() : '')} />
           </div>
           <div className="space-y-1">
-            <Label>Notes</Label>
+            <Label>{t('common.notes')}</Label>
             <Textarea value={form.notes ?? ''} onChange={(e) => set('notes', e.target.value)} rows={3} />
           </div>
         </div>
         <div className="mt-6 flex justify-between">
           {editing && (
-            <Button variant="danger" size="sm" onClick={() => { setOpen(false); setConfirmDelete(editing) }}>Delete</Button>
+            <Button variant="danger" size="sm" onClick={() => { setOpen(false); setConfirmDelete(editing) }}>{t('common.delete')}</Button>
           )}
           <div className="ml-auto flex gap-2">
-            <Button variant="secondary" size="sm" onClick={() => setOpen(false)}>Cancel</Button>
-            <Button size="sm" onClick={handleSave}>Save</Button>
+            <Button variant="secondary" size="sm" onClick={() => setOpen(false)}>{t('common.cancel')}</Button>
+            <Button size="sm" onClick={handleSave}>{t('common.save')}</Button>
           </div>
         </div>
       </Dialog>
 
-      <Dialog open={!!confirmDelete} onClose={() => setConfirmDelete(null)} title="Delete Application">
+      <Dialog open={!!confirmDelete} onClose={() => setConfirmDelete(null)} title={t('applications.delete_application')}>
         <p className="text-sm text-slate-600 dark:text-slate-300">
-          Delete application for <span className="font-semibold">{talentMap[confirmDelete?.talent_id ?? '']?.full_name ?? '—'}</span>? This cannot be undone.
+          {t('applications.delete_confirm', { name: talentMap[confirmDelete?.talent_id ?? '']?.full_name ?? '—' })} {t('common.cannot_be_undone')}
         </p>
         <div className="mt-6 flex justify-end gap-2">
-          <Button variant="secondary" size="sm" onClick={() => setConfirmDelete(null)}>Cancel</Button>
-          <Button variant="danger" size="sm" onClick={() => { deleteApplication(confirmDelete!.id); setConfirmDelete(null) }}>Yes, Delete</Button>
+          <Button variant="secondary" size="sm" onClick={() => setConfirmDelete(null)}>{t('common.cancel')}</Button>
+          <Button variant="danger" size="sm" onClick={() => { deleteApplication(confirmDelete!.id); setConfirmDelete(null) }}>{t('common.yes_delete')}</Button>
         </div>
       </Dialog>
     </div>

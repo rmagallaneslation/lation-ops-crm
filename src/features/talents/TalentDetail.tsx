@@ -3,6 +3,7 @@ import { ArrowLeft, ExternalLink, Mail, Phone, MapPin, Briefcase, Calendar, Doll
 import { useLationStore } from '../../store/useLationStore'
 import { getInitials, colorHash } from '../../lib/utils'
 import { format } from 'date-fns'
+import { useTranslation } from 'react-i18next'
 
 const STATUS_STYLES: Record<string, string> = {
   prospect:   'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300',
@@ -10,14 +11,6 @@ const STATUS_STYLES: Record<string, string> = {
   in_process: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
   placed:     'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
   inactive:   'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400',
-}
-
-const STATUS_LABELS: Record<string, string> = {
-  prospect:   'Prospecto',
-  available:  'Disponible',
-  in_process: 'En Proceso',
-  placed:     'Colocado',
-  inactive:   'Inactivo',
 }
 
 const APP_STATUS_COLORS: Record<string, string> = {
@@ -42,6 +35,7 @@ function InfoRow({ icon: Icon, label, value }: { icon: React.ElementType; label:
 }
 
 export function TalentDetail() {
+  const { t } = useTranslation()
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
 
@@ -54,9 +48,9 @@ export function TalentDetail() {
   if (!talent) {
     return (
       <div className="flex flex-col items-center justify-center h-full gap-4">
-        <p className="text-slate-500">Talento no encontrado.</p>
+        <p className="text-slate-500">{t('talents.not_found', 'Talent not found.')}</p>
         <button onClick={() => navigate('/talents')} className="text-sm text-orange-600 hover:underline">
-          Volver a Talentos
+          {t('talents.back_to_talents', 'Back to Talents')}
         </button>
       </div>
     )
@@ -73,7 +67,7 @@ export function TalentDetail() {
           className="flex items-center gap-2 text-sm text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />
-          Talentos
+          {t('talents.title')}
         </button>
       </div>
 
@@ -91,11 +85,11 @@ export function TalentDetail() {
                   <div>
                     <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100">{talent.full_name}</h1>
                     <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
-                      {talent.specialization} · {talent.level.charAt(0).toUpperCase() + talent.level.slice(1)} · {talent.years_of_experience} años exp.
+                      {talent.specialization} · {t(`level.${talent.level}`)} · {talent.years_of_experience} {t('talents.years_exp_short', 'yrs exp.')}
                     </p>
                   </div>
                   <span className={`flex-shrink-0 rounded-full px-3 py-1 text-xs font-semibold ${STATUS_STYLES[talent.status]}`}>
-                    {STATUS_LABELS[talent.status]}
+                    {t(`status.${talent.status}`)}
                   </span>
                 </div>
 
@@ -113,7 +107,7 @@ export function TalentDetail() {
                   {talent.cv_url && (
                     <a href={talent.cv_url} target="_blank" rel="noopener noreferrer"
                       className="flex items-center gap-1.5 text-xs text-blue-500 hover:underline">
-                      <ExternalLink className="h-3.5 w-3.5" /> Ver CV
+                      <ExternalLink className="h-3.5 w-3.5" /> {t('talents.view_cv', 'View CV')}
                     </a>
                   )}
                   {talent.linkedin_url && (
@@ -131,15 +125,15 @@ export function TalentDetail() {
           <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
             {/* Contact & Details */}
             <div className="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-800">
-              <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-400">Información</h2>
+              <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-400">{t('talents.information', 'Information')}</h2>
               <div className="divide-y divide-slate-100 dark:divide-slate-700">
                 <InfoRow icon={Mail} label="Email" value={talent.email} />
-                <InfoRow icon={Phone} label="Teléfono" value={talent.phone} />
-                <InfoRow icon={MapPin} label="País" value={talent.country} />
-                <InfoRow icon={MapPin} label="Timezone" value={talent.timezone} />
-                <InfoRow icon={Briefcase} label="Tipo empleo" value={talent.employment_type.replace('_', ' ')} />
-                <InfoRow icon={Calendar} label="Disponible" value={talent.available_from ? format(new Date(talent.available_from), 'dd MMM yyyy') : null} />
-                <InfoRow icon={DollarSign} label="Sal. esperado"
+                <InfoRow icon={Phone} label={t('talents.phone')} value={talent.phone} />
+                <InfoRow icon={MapPin} label={t('talents.country')} value={talent.country} />
+                <InfoRow icon={MapPin} label={t('talents.timezone')} value={talent.timezone} />
+                <InfoRow icon={Briefcase} label={t('talents.employment_type')} value={t(`employment_type.${talent.employment_type}`)} />
+                <InfoRow icon={Calendar} label={t('talents.available_from')} value={talent.available_from ? format(new Date(talent.available_from), 'dd MMM yyyy') : null} />
+                <InfoRow icon={DollarSign} label={t('talents.preferred_salary')}
                   value={talent.preferred_salary_min && talent.preferred_salary_max
                     ? `${talent.preferred_salary_currency} ${talent.preferred_salary_min.toLocaleString()} – ${talent.preferred_salary_max.toLocaleString()}`
                     : null}
@@ -149,13 +143,13 @@ export function TalentDetail() {
 
             {/* Stats */}
             <div className="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-800">
-              <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-400">Resumen</h2>
+              <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-400">{t('talents.summary', 'Summary')}</h2>
               <div className="grid grid-cols-2 gap-3">
                 {[
-                  { label: 'Aplicaciones', value: applications.length },
-                  { label: 'Colocaciones', value: placements.length },
-                  { label: 'Activas', value: applications.filter((a) => !['rejected'].includes(a.status)).length },
-                  { label: 'Idiomas', value: talent.languages.join(', ') },
+                  { label: t('applications.title'), value: applications.length },
+                  { label: t('placements.title'), value: placements.length },
+                  { label: t('placements.active'), value: applications.filter((a) => !['rejected'].includes(a.status)).length },
+                  { label: t('talents.languages'), value: talent.languages.join(', ') },
                 ].map((s) => (
                   <div key={s.label} className="rounded-lg bg-slate-50 dark:bg-slate-700/50 p-3">
                     <p className="text-xs text-slate-400">{s.label}</p>
@@ -171,7 +165,7 @@ export function TalentDetail() {
             <div className="rounded-xl border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800">
               <div className="border-b border-slate-100 dark:border-slate-700 px-5 py-4">
                 <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
-                  Historial de Aplicaciones
+                  {t('talents.application_history', 'Application History')}
                   <span className="ml-2 rounded-full bg-slate-100 dark:bg-slate-700 px-2 py-0.5 text-xs text-slate-500 dark:text-slate-400">
                     {applications.length}
                   </span>
@@ -190,7 +184,7 @@ export function TalentDetail() {
                         <p className="text-xs text-slate-400">{emp?.company_name ?? '—'} · {format(new Date(app.applied_at), 'dd MMM yyyy')}</p>
                       </div>
                       <span className={`flex-shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${APP_STATUS_COLORS[app.status] ?? ''}`}>
-                        {app.status.replace(/_/g, ' ')}
+                        {t(`status.${app.status}`)}
                       </span>
                     </div>
                   )
@@ -203,7 +197,7 @@ export function TalentDetail() {
           {placements.length > 0 && (
             <div className="rounded-xl border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800">
               <div className="border-b border-slate-100 dark:border-slate-700 px-5 py-4">
-                <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Colocaciones</h2>
+                <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{t('placements.title')}</h2>
               </div>
               <div className="divide-y divide-slate-100 dark:divide-slate-700">
                 {placements.map((pl) => {
@@ -214,7 +208,7 @@ export function TalentDetail() {
                       <div className="min-w-0 flex-1">
                         <p className="text-sm font-medium text-slate-900 dark:text-slate-100">{pos?.title ?? '—'}</p>
                         <p className="text-xs text-slate-400">
-                          {emp?.company_name ?? '—'} · Inicio: {format(new Date(pl.start_date), 'dd MMM yyyy')}
+                          {emp?.company_name ?? '—'} · {t('common.start')}: {format(new Date(pl.start_date), 'dd MMM yyyy')}
                         </p>
                       </div>
                       <div className="text-right">
@@ -222,7 +216,7 @@ export function TalentDetail() {
                           {pl.currency} {pl.final_salary.toLocaleString()}
                         </p>
                         <p className="text-xs text-emerald-600 dark:text-emerald-400">
-                          Comisión: ${pl.commission_amount.toLocaleString()}
+                          {t('common.commission')}: ${pl.commission_amount.toLocaleString()}
                         </p>
                       </div>
                     </div>
