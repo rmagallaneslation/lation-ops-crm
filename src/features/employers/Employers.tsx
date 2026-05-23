@@ -33,16 +33,23 @@ export function Employers() {
 
   const [search, setSearch] = useState('')
   const [filterStatus, setFilterStatus] = useState('')
+  const [filterEmployerType, setFilterEmployerType] = useState('')
+  const [filterCountry, setFilterCountry] = useState('')
   const [open, setOpen] = useState(false)
   const [editing, setEditing] = useState<Employer | null>(null)
+  const [confirmDelete, setConfirmDelete] = useState<Employer | null>(null)
   const [form, setForm] = useState<Form>(empty())
+
+  const countries = [...new Set(employers.map((e) => e.country).filter(Boolean))].sort()
 
   const filtered = employers.filter((e) => {
     const q = search.toLowerCase()
     return (e.company_name.toLowerCase().includes(q) ||
       e.industry.toLowerCase().includes(q) ||
       e.contact_name.toLowerCase().includes(q)) &&
-      (!filterStatus || e.status === filterStatus)
+      (!filterStatus || e.status === filterStatus) &&
+      (!filterEmployerType || e.employer_type === filterEmployerType) &&
+      (!filterCountry || e.country === filterCountry)
   })
 
   function openAdd() { setEditing(null); setForm(empty()); setOpen(true) }
@@ -73,6 +80,16 @@ export function Employers() {
             <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
             <Input className="pl-9" placeholder="Search company, industry, contact…" value={search} onChange={(e) => setSearch(e.target.value)} />
           </div>
+          <Select value={filterEmployerType} onChange={(e) => setFilterEmployerType(e.target.value)} className="w-44">
+            <option value="">All Types</option>
+            <option value="hiring_company">Hiring Company</option>
+            <option value="talent_source">Talent Source</option>
+            <option value="both">Both</option>
+          </Select>
+          <Select value={filterCountry} onChange={(e) => setFilterCountry(e.target.value)} className="w-40">
+            <option value="">All Countries</option>
+            {countries.map((c) => <option key={c} value={c}>{c}</option>)}
+          </Select>
           <Select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} className="w-40">
             <option value="">All Statuses</option>
             <option value="active">Active</option>
@@ -88,7 +105,7 @@ export function Employers() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-slate-100 bg-slate-50 dark:border-slate-700 dark:bg-slate-900">
-                  {['Company', 'Industry', 'Country', 'Contact', 'Open Positions', 'Status'].map((h) => (
+                  {['Company', 'Type', 'Country', 'Contact', 'Open Positions', 'Status'].map((h) => (
                     <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-400">{h}</th>
                   ))}
                 </tr>
@@ -115,7 +132,7 @@ export function Employers() {
                           </div>
                         </div>
                       </td>
-                      <td className="px-4 py-3 text-slate-600 dark:text-slate-300">{e.industry}</td>
+                      <td className="px-4 py-3 text-xs text-slate-600 dark:text-slate-300 capitalize">{e.employer_type.replace('_', ' ')}</td>
                       <td className="px-4 py-3 text-slate-600 dark:text-slate-300">{e.country}</td>
                       <td className="px-4 py-3">
                         <p className="font-medium text-slate-800 dark:text-slate-200 text-xs">{e.contact_name}</p>
@@ -211,12 +228,22 @@ export function Employers() {
         </div>
         <div className="mt-6 flex justify-between">
           {editing && (
-            <Button variant="danger" size="sm" onClick={() => { deleteEmployer(editing.id); setOpen(false) }}>Delete</Button>
+            <Button variant="danger" size="sm" onClick={() => { setOpen(false); setConfirmDelete(editing) }}>Delete</Button>
           )}
           <div className="ml-auto flex gap-2">
             <Button variant="secondary" size="sm" onClick={() => setOpen(false)}>Cancel</Button>
             <Button size="sm" onClick={handleSave}>Save</Button>
           </div>
+        </div>
+      </Dialog>
+
+      <Dialog open={!!confirmDelete} onClose={() => setConfirmDelete(null)} title="Delete Employer">
+        <p className="text-sm text-slate-600 dark:text-slate-300">
+          Delete <span className="font-semibold">{confirmDelete?.company_name}</span>? This cannot be undone.
+        </p>
+        <div className="mt-6 flex justify-end gap-2">
+          <Button variant="secondary" size="sm" onClick={() => setConfirmDelete(null)}>Cancel</Button>
+          <Button variant="danger" size="sm" onClick={() => { deleteEmployer(confirmDelete!.id); setConfirmDelete(null) }}>Yes, Delete</Button>
         </div>
       </Dialog>
     </div>

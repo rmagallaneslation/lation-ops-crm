@@ -11,20 +11,22 @@ import {
   ChevronRight,
   Sun,
   Moon,
+  Languages,
 } from 'lucide-react'
 import { cn } from '../../lib/utils'
 import { getInitials } from '../../lib/utils'
 import { useTheme } from '../../lib/theme'
+import { useTranslation } from 'react-i18next'
 
-const NAV = [
-  { to: '/', label: 'Dashboard', icon: LayoutDashboard, end: true },
-  { to: '/talents', label: 'Talents', icon: Users },
-  { to: '/employers', label: 'Employers', icon: Building2 },
-  { to: '/positions', label: 'Positions', icon: Briefcase },
-  { to: '/applications', label: 'Applications', icon: FileText },
-  { to: '/placements', label: 'Placements', icon: TrendingUp },
-  { to: '/settings', label: 'Settings', icon: Settings },
-]
+const NAV_KEYS = [
+  { to: '/', key: 'dashboard', icon: LayoutDashboard, end: true },
+  { to: '/talents', key: 'talents', icon: Users },
+  { to: '/employers', key: 'employers', icon: Building2 },
+  { to: '/positions', key: 'positions', icon: Briefcase },
+  { to: '/applications', key: 'applications', icon: FileText },
+  { to: '/placements', key: 'placements', icon: TrendingUp },
+  { to: '/settings', key: 'settings', icon: Settings },
+] as const
 
 const TEAM = ['Roberto', 'Reynaldo', 'Santiago'] as const
 
@@ -33,6 +35,9 @@ export function Sidebar() {
   const dark = useTheme((s) => s.dark)
   const toggleSidebar = useTheme((s) => s.toggleSidebar)
   const toggleDark = useTheme((s) => s.toggleDark)
+  const { t, i18n } = useTranslation()
+  const isES = i18n.language === 'es'
+  function toggleLang() { void i18n.changeLanguage(isES ? 'en' : 'es') }
 
   return (
     <aside
@@ -65,27 +70,31 @@ export function Sidebar() {
       {/* Nav */}
       <nav className="flex-1 overflow-y-auto py-4 px-2">
         <ul className="space-y-0.5">
-          {NAV.map(({ to, label, icon: Icon, end }) => (
-            <li key={to}>
-              <NavLink
-                to={to}
-                end={end}
-                title={collapsed ? label : undefined}
-                className={({ isActive }) =>
-                  cn(
-                    'flex items-center rounded-lg py-2 text-sm transition-colors',
-                    collapsed ? 'justify-center px-2' : 'gap-3 px-3',
-                    isActive
-                      ? 'bg-orange-600 text-white'
-                      : 'text-slate-400 hover:bg-white/5 hover:text-white'
-                  )
-                }
-              >
-                <Icon className="h-4 w-4 flex-shrink-0" />
-                {!collapsed && label}
-              </NavLink>
-            </li>
-          ))}
+          {NAV_KEYS.map(({ to, key, icon: Icon, ...rest }) => {
+            const label = key === 'settings' ? 'Settings' : t(`nav.${key}`)
+            const end = 'end' in rest ? rest.end : undefined
+            return (
+              <li key={to}>
+                <NavLink
+                  to={to}
+                  end={end}
+                  title={collapsed ? label : undefined}
+                  className={({ isActive }) =>
+                    cn(
+                      'flex items-center rounded-lg py-2 text-sm transition-colors',
+                      collapsed ? 'justify-center px-2' : 'gap-3 px-3',
+                      isActive
+                        ? 'bg-orange-600 text-white'
+                        : 'text-slate-400 hover:bg-white/5 hover:text-white'
+                    )
+                  }
+                >
+                  <Icon className="h-4 w-4 flex-shrink-0" />
+                  {!collapsed && label}
+                </NavLink>
+              </li>
+            )
+          })}
         </ul>
       </nav>
 
@@ -102,6 +111,19 @@ export function Sidebar() {
         >
           {dark ? <Sun className="h-4 w-4 flex-shrink-0" /> : <Moon className="h-4 w-4 flex-shrink-0" />}
           {!collapsed && (dark ? 'Light Mode' : 'Dark Mode')}
+        </button>
+
+        {/* Language toggle */}
+        <button
+          onClick={toggleLang}
+          title={isES ? 'Switch to English' : 'Cambiar a Español'}
+          className={cn(
+            'flex w-full items-center rounded-lg py-2 text-sm text-slate-400 hover:bg-white/5 hover:text-white transition-colors',
+            collapsed ? 'justify-center px-2' : 'gap-3 px-3'
+          )}
+        >
+          <Languages className="h-4 w-4 flex-shrink-0" />
+          {!collapsed && (isES ? 'English' : 'Español')}
         </button>
 
         {/* Team avatars */}

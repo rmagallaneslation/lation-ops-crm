@@ -18,6 +18,13 @@ const STATUS_COLORS: Record<PositionStatus, string> = {
   closed: 'bg-slate-100 text-slate-500 dark:bg-slate-700 dark:text-slate-400',
 }
 
+const LEVEL_COLORS: Record<TalentLevel, string> = {
+  junior: 'bg-sky-100 text-sky-700 dark:bg-sky-900/30 dark:text-sky-400',
+  mid: 'bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-400',
+  senior: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
+  lead: 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400',
+  architect: 'bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400',
+}
 
 type Form = Omit<Position, 'id' | 'created_at' | 'updated_at'>
 
@@ -40,8 +47,10 @@ export function Positions() {
   const [search, setSearch] = useState('')
   const [filterStatus, setFilterStatus] = useState('')
   const [filterEmployer, setFilterEmployer] = useState('')
+  const [filterLevel, setFilterLevel] = useState('')
   const [open, setOpen] = useState(false)
   const [editing, setEditing] = useState<Position | null>(null)
+  const [confirmDelete, setConfirmDelete] = useState<Position | null>(null)
   const [form, setForm] = useState<Form>(empty())
 
   const employerMap = Object.fromEntries(employers.map((e) => [e.id, e]))
@@ -55,7 +64,8 @@ export function Positions() {
       p.specialization.toLowerCase().includes(q) ||
       (employerMap[p.employer_id]?.company_name ?? '').toLowerCase().includes(q)) &&
       (!filterStatus || p.status === filterStatus) &&
-      (!filterEmployer || p.employer_id === filterEmployer)
+      (!filterEmployer || p.employer_id === filterEmployer) &&
+      (!filterLevel || p.level === filterLevel)
   })
 
   function openAdd() { setEditing(null); setForm(empty()); setOpen(true) }
@@ -86,75 +96,82 @@ export function Positions() {
             <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
             <Input className="pl-9" placeholder="Search title, specialization, employer…" value={search} onChange={(e) => setSearch(e.target.value)} />
           </div>
-          <Select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} className="w-36">
-            <option value="">All Statuses</option>
-            <option value="open">Open</option>
-            <option value="paused">Paused</option>
-            <option value="filled">Filled</option>
-            <option value="closed">Closed</option>
-          </Select>
           <Select value={filterEmployer} onChange={(e) => setFilterEmployer(e.target.value)} className="w-44">
             <option value="">All Employers</option>
             {employers.map((e) => <option key={e.id} value={e.id}>{e.company_name}</option>)}
+          </Select>
+          <Select value={filterLevel} onChange={(e) => setFilterLevel(e.target.value)} className="w-32">
+            <option value="">All Levels</option>
+            <option value="junior">Junior</option>
+            <option value="mid">Mid</option>
+            <option value="senior">Senior</option>
+            <option value="lead">Lead</option>
+            <option value="architect">Architect</option>
+          </Select>
+          <Select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} className="w-36">
+            <option value="">All Statuses</option>
+            <option value="open">Open</option>
+            <option value="in_progress">In Progress</option>
+            <option value="filled">Filled</option>
+            <option value="closed">Closed</option>
           </Select>
         </div>
 
         {filtered.length === 0 ? (
           <EmptyState title="No positions found" action={{ label: 'Add Position', onClick: openAdd }} />
         ) : (
-          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-            {filtered.map((p) => {
-              const employer = employerMap[p.employer_id]
-              const appCount = appCountMap[p.id] ?? 0
-              return (
-                <div
-                  key={p.id}
-                  onClick={() => openEdit(p)}
-                  className="cursor-pointer rounded-xl border border-slate-200 bg-white p-5 shadow-sm hover:border-blue-300 hover:shadow-md transition-all duration-200 dark:border-slate-700 dark:bg-slate-800 dark:hover:border-blue-500"
-                >
-                  <div className="flex items-start justify-between gap-2 mb-2">
-                    <div>
-                      <p className="font-semibold text-slate-900 dark:text-slate-100 text-sm">{p.title}</p>
-                      <p className="text-xs text-slate-500 dark:text-slate-400">{employer?.company_name ?? '—'}</p>
-                    </div>
-                    <span className={`flex-shrink-0 rounded-full px-2 py-0.5 text-xs font-medium capitalize ${STATUS_COLORS[p.status]}`}>
-                      {p.status}
-                    </span>
-                  </div>
-
-                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mb-3 text-xs text-slate-500 dark:text-slate-400">
-                    <span className="capitalize font-medium text-slate-700 dark:text-slate-300">{p.level}</span>
-                    <span>·</span>
-                    <span>{p.specialization}</span>
-                    <span>·</span>
-                    <span className="flex items-center gap-1">
-                      <MapPin className="h-3 w-3" />{p.work_location.replace('_', ' ')}
-                    </span>
-                  </div>
-
-                  {(p.salary_min || p.salary_max) && (
-                    <div className="flex items-center gap-1 text-xs text-slate-600 dark:text-slate-300 mb-3">
-                      <DollarSign className="h-3 w-3" />
-                      {p.salary_min?.toLocaleString()} – {p.salary_max?.toLocaleString()} {p.currency}/mo
-                    </div>
-                  )}
-
-                  <div className="flex items-center justify-between">
-                    <div className="flex flex-wrap gap-1">
-                      {p.required_skills.slice(0, 3).map((s) => (
-                        <span key={s} className="rounded-md bg-slate-100 px-2 py-0.5 text-xs text-slate-600 dark:bg-slate-700 dark:text-slate-300">{s}</span>
-                      ))}
-                      {p.required_skills.length > 3 && (
-                        <span className="rounded-md bg-slate-100 px-2 py-0.5 text-xs text-slate-500 dark:bg-slate-700 dark:text-slate-400">+{p.required_skills.length - 3}</span>
-                      )}
-                    </div>
-                    <span className="text-xs text-slate-400 dark:text-slate-500 ml-2 flex-shrink-0">
-                      {appCount} applicant{appCount !== 1 ? 's' : ''}
-                    </span>
-                  </div>
-                </div>
-              )
-            })}
+          <div className="rounded-xl border border-slate-200 bg-white overflow-hidden dark:border-slate-700 dark:bg-slate-800">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-slate-100 bg-slate-50 dark:border-slate-700 dark:bg-slate-900">
+                  {['Title', 'Employer', 'Level', 'Specialization', 'Salary', 'Apps', 'Deadline', 'Status'].map((h) => (
+                    <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-400">{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
+                {filtered.map((p) => {
+                  const employer = employerMap[p.employer_id]
+                  const appCount = appCountMap[p.id] ?? 0
+                  return (
+                    <tr key={p.id} className="hover:bg-slate-50 cursor-pointer dark:hover:bg-slate-700/50 transition-colors" onClick={() => openEdit(p)}>
+                      <td className="px-4 py-3">
+                        <p className="font-semibold text-slate-900 dark:text-slate-100">{p.title}</p>
+                        <p className="text-xs text-slate-400 flex items-center gap-1 mt-0.5">
+                          <MapPin className="h-3 w-3" />{p.work_location.replace('_', ' ')}
+                        </p>
+                      </td>
+                      <td className="px-4 py-3 text-slate-600 dark:text-slate-300">{employer?.company_name ?? '—'}</td>
+                      <td className="px-4 py-3">
+                        <span className={`rounded-full px-2 py-0.5 text-xs font-medium capitalize ${LEVEL_COLORS[p.level]}`}>
+                          {p.level}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-slate-600 dark:text-slate-300">{p.specialization}</td>
+                      <td className="px-4 py-3 text-xs text-slate-500 dark:text-slate-400">
+                        {(p.salary_min || p.salary_max) ? (
+                          <span className="flex items-center gap-0.5">
+                            <DollarSign className="h-3 w-3" />
+                            {p.salary_min?.toLocaleString()}–{p.salary_max?.toLocaleString()}
+                          </span>
+                        ) : '—'}
+                      </td>
+                      <td className="px-4 py-3">
+                        <span className={`inline-flex h-6 w-6 items-center justify-center rounded-full text-xs font-semibold ${appCount > 0 ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' : 'bg-slate-100 text-slate-500 dark:bg-slate-700 dark:text-slate-400'}`}>
+                          {appCount}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-xs text-slate-500 dark:text-slate-400">{p.deadline || '—'}</td>
+                      <td className="px-4 py-3">
+                        <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${STATUS_COLORS[p.status]}`}>
+                          {p.status.replace('_', ' ')}
+                        </span>
+                      </td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
           </div>
         )}
       </div>
@@ -253,12 +270,22 @@ export function Positions() {
         </div>
         <div className="mt-6 flex justify-between">
           {editing && (
-            <Button variant="danger" size="sm" onClick={() => { deletePosition(editing.id); setOpen(false) }}>Delete</Button>
+            <Button variant="danger" size="sm" onClick={() => { setOpen(false); setConfirmDelete(editing) }}>Delete</Button>
           )}
           <div className="ml-auto flex gap-2">
             <Button variant="secondary" size="sm" onClick={() => setOpen(false)}>Cancel</Button>
             <Button size="sm" onClick={handleSave}>Save</Button>
           </div>
+        </div>
+      </Dialog>
+
+      <Dialog open={!!confirmDelete} onClose={() => setConfirmDelete(null)} title="Delete Position">
+        <p className="text-sm text-slate-600 dark:text-slate-300">
+          Delete <span className="font-semibold">{confirmDelete?.title}</span>? This cannot be undone.
+        </p>
+        <div className="mt-6 flex justify-end gap-2">
+          <Button variant="secondary" size="sm" onClick={() => setConfirmDelete(null)}>Cancel</Button>
+          <Button variant="danger" size="sm" onClick={() => { deletePosition(confirmDelete!.id); setConfirmDelete(null) }}>Yes, Delete</Button>
         </div>
       </Dialog>
     </div>

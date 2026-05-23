@@ -50,6 +50,7 @@ export function Applications() {
   const [viewMode, setViewMode] = useState<'kanban' | 'list'>('kanban')
   const [open, setOpen] = useState(false)
   const [editing, setEditing] = useState<Application | null>(null)
+  const [confirmDelete, setConfirmDelete] = useState<Application | null>(null)
   const [form, setForm] = useState<Form>(empty())
 
   const talentMap = Object.fromEntries(talents.map((t) => [t.id, t]))
@@ -240,12 +241,22 @@ export function Applications() {
         </div>
         <div className="mt-6 flex justify-between">
           {editing && (
-            <Button variant="danger" size="sm" onClick={() => { deleteApplication(editing.id); setOpen(false) }}>Delete</Button>
+            <Button variant="danger" size="sm" onClick={() => { setOpen(false); setConfirmDelete(editing) }}>Delete</Button>
           )}
           <div className="ml-auto flex gap-2">
             <Button variant="secondary" size="sm" onClick={() => setOpen(false)}>Cancel</Button>
             <Button size="sm" onClick={handleSave}>Save</Button>
           </div>
+        </div>
+      </Dialog>
+
+      <Dialog open={!!confirmDelete} onClose={() => setConfirmDelete(null)} title="Delete Application">
+        <p className="text-sm text-slate-600 dark:text-slate-300">
+          Delete application for <span className="font-semibold">{talentMap[confirmDelete?.talent_id ?? '']?.full_name ?? '—'}</span>? This cannot be undone.
+        </p>
+        <div className="mt-6 flex justify-end gap-2">
+          <Button variant="secondary" size="sm" onClick={() => setConfirmDelete(null)}>Cancel</Button>
+          <Button variant="danger" size="sm" onClick={() => { deleteApplication(confirmDelete!.id); setConfirmDelete(null) }}>Yes, Delete</Button>
         </div>
       </Dialog>
     </div>
