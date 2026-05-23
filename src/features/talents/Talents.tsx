@@ -1,5 +1,7 @@
 import { useState } from 'react'
-import { Plus, Search, ExternalLink } from 'lucide-react'
+import { Plus, Search, ExternalLink, Eye, Columns } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+import toast from 'react-hot-toast'
 import { TopBar } from '../../components/layout/TopBar'
 import { Button } from '../../components/ui/button'
 import { Input } from '../../components/ui/input'
@@ -11,6 +13,7 @@ import { useLationStore } from '../../store/useLationStore'
 import type { Talent, TalentLevel, TalentStatus, EmploymentType } from '../../types/lation'
 
 const STATUS_COLORS: Record<TalentStatus, string> = {
+  prospect:   'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300',
   available:  'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400',
   in_process: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
   placed:     'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
@@ -18,6 +21,7 @@ const STATUS_COLORS: Record<TalentStatus, string> = {
 }
 
 const STATUS_LABELS: Record<TalentStatus, string> = {
+  prospect:   'Prospecto',
   available:  'Available',
   in_process: 'In Process',
   placed:     'Placed',
@@ -32,13 +36,33 @@ const LEVEL_COLORS: Record<TalentLevel, string> = {
   architect: 'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300',
 }
 
+type ColKey = 'name' | 'country' | 'level' | 'specialization' | 'stack' | 'status' | 'links'
+
+const ALL_COLUMNS: { key: ColKey; label: string; defaultVisible: boolean }[] = [
+  { key: 'name',           label: 'Nombre',          defaultVisible: true },
+  { key: 'country',        label: 'País',             defaultVisible: true },
+  { key: 'level',          label: 'Nivel',            defaultVisible: true },
+  { key: 'specialization', label: 'Especialización',  defaultVisible: true },
+  { key: 'stack',          label: 'Stack',            defaultVisible: true },
+  { key: 'status',         label: 'Status',           defaultVisible: true },
+  { key: 'links',          label: 'Links',            defaultVisible: true },
+]
+
+function getStoredCols(): Set<ColKey> {
+  try {
+    const raw = localStorage.getItem('lation-talent-cols')
+    if (raw) return new Set(JSON.parse(raw) as ColKey[])
+  } catch { /* ignore */ }
+  return new Set(ALL_COLUMNS.filter(c => c.defaultVisible).map(c => c.key))
+}
+
 type Form = Omit<Talent, 'id' | 'created_at' | 'updated_at'>
 
 const empty = (): Form => ({
   full_name: '', email: '', phone: '', country: '', timezone: '',
   tech_stack: [], languages: ['Spanish', 'English'], level: 'mid',
   years_of_experience: 2, specialization: 'Full Stack',
-  cv_url: '', available_from: '', employment_type: 'full_time',
+  cv_url: '', linkedin_url: '', available_from: '', employment_type: 'full_time',
   preferred_salary_min: undefined, preferred_salary_max: undefined,
   preferred_salary_currency: 'USD', status: 'available',
 })
@@ -49,6 +73,7 @@ export function Talents() {
   const updateTalent = useLationStore((s) => s.updateTalent)
   const deleteTalent = useLationStore((s) => s.deleteTalent)
 
+  const navigate = useNavigate()
   const [search, setSearch] = useState('')
   const [filterStatus, setFilterStatus] = useState('')
   const [filterLevel, setFilterLevel] = useState('')
@@ -58,6 +83,23 @@ export function Talents() {
   const [editing, setEditing] = useState<Talent | null>(null)
   const [form, setForm] = useState<Form>(empty())
   const [confirmDelete, setConfirmDelete] = useState<Talent | null>(null)
+  const [visibleCols, setVisibleCols] = useState<Set<ColKey>>(getStoredCols)
+  const [colMenuOpen, setColMenuOpen] = useState(false)
+
+  function toggleCol(key: ColKey) {
+    if (key === 'name') return
+    setVisibleCols((prev) => {
+      const next = new Set(prev)
+      if (next.has(key)) {
+        if (next.size <= 1) return prev
+        next.delete(key)
+      } else {
+        next.add(key)
+      }
+      localStorage.setItem('lation-talent-cols', JSON.stringify([...next]))
+      return next
+    })
+  }
 
   // Unique values for filter dropdowns
   const countries = [...new Set(talents.map((t) => t.country))].sort()
@@ -83,14 +125,15 @@ export function Talents() {
 
   function handleSave() {
     if (!form.full_name.trim() || !form.email.trim() || !form.country.trim() || !form.specialization.trim()) return
-    if (editing) updateTalent(editing.id, form)
-    else addTalent(form)
+    if (editing) { updateTalent(editing.id, form); toast.success('Talento actualizado') }
+    else { addTalent(form); toast.success('Talento agregado') }
     setOpen(false)
   }
 
   function handleDeleteConfirm() {
     if (!confirmDelete) return
     deleteTalent(confirmDelete.id)
+    toast.success('Talento eliminado')
     setConfirmDelete(null)
     setOpen(false)
   }
@@ -121,6 +164,7 @@ export function Talents() {
           </div>
           <Select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} className="w-40">
             <option value="">All Statuses</option>
+            <option value="prospect">Prospecto</option>
             <option value="available">Available</option>
             <option value="in_process">In Process</option>
             <option value="placed">Placed</option>
@@ -142,6 +186,39 @@ export function Talents() {
             <option value="">All Specializations</option>
             {specializations.map((s) => <option key={s} value={s}>{s}</option>)}
           </Select>
+
+          {/* Column visibility toggle */}
+          <div className="relative">
+            <button
+              onClick={() => setColMenuOpen((o) => !o)}
+              className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-600 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 transition-colors"
+            >
+              <Columns className="h-3.5 w-3.5" />
+              Columnas
+            </button>
+            {colMenuOpen && (
+              <>
+                <div className="fixed inset-0 z-10" onClick={() => setColMenuOpen(false)} />
+                <div className="absolute right-0 top-full z-20 mt-1 w-44 rounded-xl border border-slate-200 bg-white py-1 shadow-lg dark:border-slate-700 dark:bg-slate-800">
+                  {ALL_COLUMNS.map((col) => (
+                    <label
+                      key={col.key}
+                      className="flex cursor-pointer items-center gap-2.5 px-3 py-2 hover:bg-slate-50 dark:hover:bg-slate-700/50"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={visibleCols.has(col.key)}
+                        onChange={() => toggleCol(col.key)}
+                        disabled={col.key === 'name'}
+                        className="h-3.5 w-3.5 rounded accent-orange-500 disabled:opacity-50"
+                      />
+                      <span className="text-xs text-slate-700 dark:text-slate-300">{col.label}</span>
+                    </label>
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
         </div>
 
         {/* Table */}
@@ -152,9 +229,12 @@ export function Talents() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-slate-100 bg-slate-50 dark:border-slate-700 dark:bg-slate-900">
-                  {['Name', 'Country', 'Level', 'Specialization', 'Stack', 'Status', 'CV'].map((h) => (
-                    <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-400">{h}</th>
+                  {ALL_COLUMNS.filter(c => visibleCols.has(c.key)).map((col) => (
+                    <th key={col.key} className="px-4 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-400">
+                      {col.label}
+                    </th>
                   ))}
+                  <th className="px-4 py-3 w-8" />
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
@@ -164,56 +244,81 @@ export function Talents() {
                     className="hover:bg-slate-50 cursor-pointer dark:hover:bg-slate-700/50 transition-colors"
                     onClick={() => openEdit(t)}
                   >
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-3">
-                        <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-xs font-semibold text-white">
-                          {t.full_name.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase()}
+                    {visibleCols.has('name') && (
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-3">
+                          <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-xs font-semibold text-white">
+                            {t.full_name.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase()}
+                          </div>
+                          <div>
+                            <p className="font-semibold text-slate-900 dark:text-slate-100">{t.full_name}</p>
+                            <p className="text-xs text-slate-400 dark:text-slate-500">{t.email}</p>
+                          </div>
                         </div>
-                        <div>
-                          <p className="font-semibold text-slate-900 dark:text-slate-100">{t.full_name}</p>
-                          <p className="text-xs text-slate-400 dark:text-slate-500">{t.email}</p>
+                      </td>
+                    )}
+                    {visibleCols.has('country') && (
+                      <td className="px-4 py-3 text-slate-600 dark:text-slate-300">{t.country}</td>
+                    )}
+                    {visibleCols.has('level') && (
+                      <td className="px-4 py-3">
+                        <span className={`rounded-full px-2 py-0.5 text-xs font-medium capitalize ${LEVEL_COLORS[t.level]}`}>
+                          {t.level}
+                        </span>
+                      </td>
+                    )}
+                    {visibleCols.has('specialization') && (
+                      <td className="px-4 py-3 text-slate-600 dark:text-slate-300">{t.specialization}</td>
+                    )}
+                    {visibleCols.has('stack') && (
+                      <td className="px-4 py-3">
+                        <div className="flex flex-wrap gap-1">
+                          {t.tech_stack.slice(0, 3).map((tech) => (
+                            <span key={tech} className="rounded bg-slate-100 px-1.5 py-0.5 text-xs text-slate-600 dark:bg-slate-700 dark:text-slate-300">
+                              {tech}
+                            </span>
+                          ))}
+                          {t.tech_stack.length > 3 && (
+                            <span className="rounded bg-slate-100 px-1.5 py-0.5 text-xs text-slate-500 dark:bg-slate-700 dark:text-slate-400">
+                              +{t.tech_stack.length - 3}
+                            </span>
+                          )}
                         </div>
-                      </div>
-                    </td>
-                    <td className="px-4 py-3 text-slate-600 dark:text-slate-300">{t.country}</td>
-                    <td className="px-4 py-3">
-                      <span className={`rounded-full px-2 py-0.5 text-xs font-medium capitalize ${LEVEL_COLORS[t.level]}`}>
-                        {t.level}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-slate-600 dark:text-slate-300">{t.specialization}</td>
-                    <td className="px-4 py-3">
-                      <div className="flex flex-wrap gap-1">
-                        {t.tech_stack.slice(0, 3).map((tech) => (
-                          <span key={tech} className="rounded bg-slate-100 px-1.5 py-0.5 text-xs text-slate-600 dark:bg-slate-700 dark:text-slate-300">
-                            {tech}
-                          </span>
-                        ))}
-                        {t.tech_stack.length > 3 && (
-                          <span className="rounded bg-slate-100 px-1.5 py-0.5 text-xs text-slate-500 dark:bg-slate-700 dark:text-slate-400">
-                            +{t.tech_stack.length - 3}
-                          </span>
-                        )}
-                      </div>
-                    </td>
-                    <td className="px-4 py-3">
-                      <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${STATUS_COLORS[t.status]}`}>
-                        {STATUS_LABELS[t.status]}
-                      </span>
-                    </td>
+                      </td>
+                    )}
+                    {visibleCols.has('status') && (
+                      <td className="px-4 py-3">
+                        <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${STATUS_COLORS[t.status]}`}>
+                          {STATUS_LABELS[t.status]}
+                        </span>
+                      </td>
+                    )}
+                    {visibleCols.has('links') && (
+                      <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
+                        <div className="flex items-center gap-2">
+                          {t.cv_url ? (
+                            <a href={t.cv_url} target="_blank" rel="noopener noreferrer"
+                              className="flex items-center gap-1 text-xs text-blue-500 hover:underline">
+                              <ExternalLink className="h-3 w-3" /> CV
+                            </a>
+                          ) : <span className="text-xs text-slate-300 dark:text-slate-600">—</span>}
+                          {t.linkedin_url && (
+                            <a href={t.linkedin_url} target="_blank" rel="noopener noreferrer"
+                              className="flex items-center gap-1 text-xs text-blue-600 hover:underline">
+                              <ExternalLink className="h-3 w-3" /> LI
+                            </a>
+                          )}
+                        </div>
+                      </td>
+                    )}
                     <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
-                      {t.cv_url ? (
-                        <a
-                          href={t.cv_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-center gap-1 text-xs text-blue-500 hover:underline"
-                        >
-                          <ExternalLink className="h-3 w-3" /> CV
-                        </a>
-                      ) : (
-                        <span className="text-xs text-slate-300 dark:text-slate-600">—</span>
-                      )}
+                      <button
+                        onClick={() => navigate(`/talents/${t.id}`)}
+                        className="flex items-center gap-1 text-xs text-slate-400 hover:text-orange-600 transition-colors"
+                        title="Ver perfil"
+                      >
+                        <Eye className="h-3.5 w-3.5" />
+                      </button>
                     </td>
                   </tr>
                 ))}
@@ -296,6 +401,7 @@ export function Talents() {
           <div className="space-y-1">
             <Label>Status</Label>
             <Select value={form.status} onChange={(e) => set('status', e.target.value as TalentStatus)}>
+              <option value="prospect">Prospecto</option>
               <option value="available">Available</option>
               <option value="in_process">In Process</option>
               <option value="placed">Placed</option>
@@ -329,6 +435,14 @@ export function Talents() {
           <div className="col-span-2 space-y-1">
             <Label>CV URL (Google Drive or similar)</Label>
             <Input value={form.cv_url ?? ''} onChange={(e) => set('cv_url', e.target.value)} placeholder="https://drive.google.com/…" />
+          </div>
+          <div className="col-span-2 space-y-1">
+            <Label>LinkedIn URL</Label>
+            <Input
+              value={form.linkedin_url ?? ''}
+              onChange={(e) => set('linkedin_url', e.target.value)}
+              placeholder="https://linkedin.com/in/username"
+            />
           </div>
         </div>
 

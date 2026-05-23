@@ -1,5 +1,7 @@
 import { useState } from 'react'
-import { Plus, Search, Globe, Phone, Mail } from 'lucide-react'
+import { Plus, Search, Globe, Phone, Mail, Eye } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+import toast from 'react-hot-toast'
 import { TopBar } from '../../components/layout/TopBar'
 import { Button } from '../../components/ui/button'
 import { Input } from '../../components/ui/input'
@@ -31,6 +33,7 @@ export function Employers() {
   const updateEmployer = useLationStore((s) => s.updateEmployer)
   const deleteEmployer = useLationStore((s) => s.deleteEmployer)
 
+  const navigate = useNavigate()
   const [search, setSearch] = useState('')
   const [filterStatus, setFilterStatus] = useState('')
   const [filterEmployerType, setFilterEmployerType] = useState('')
@@ -58,8 +61,8 @@ export function Employers() {
 
   function handleSave() {
     if (!form.company_name.trim()) return
-    if (editing) updateEmployer(editing.id, form)
-    else addEmployer(form)
+    if (editing) { updateEmployer(editing.id, form); toast.success('Empresa actualizada') }
+    else { addEmployer(form); toast.success('Empresa agregada') }
     setOpen(false)
   }
 
@@ -105,7 +108,7 @@ export function Employers() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-slate-100 bg-slate-50 dark:border-slate-700 dark:bg-slate-900">
-                  {['Company', 'Type', 'Country', 'Contact', 'Open Positions', 'Status'].map((h) => (
+                  {['Company', 'Type', 'Country', 'Contact', 'Open Positions', 'Status', ''].map((h) => (
                     <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-400">{h}</th>
                   ))}
                 </tr>
@@ -161,6 +164,15 @@ export function Employers() {
                         <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${STATUS_COLORS[e.status]}`}>
                           {e.status}
                         </span>
+                      </td>
+                      <td className="px-4 py-3" onClick={(ev) => ev.stopPropagation()}>
+                        <button
+                          onClick={() => navigate(`/employers/${e.id}`)}
+                          className="flex items-center gap-1 text-xs text-slate-400 hover:text-orange-600 transition-colors"
+                          title="Ver empresa"
+                        >
+                          <Eye className="h-3.5 w-3.5" />
+                        </button>
                       </td>
                     </tr>
                   )

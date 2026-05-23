@@ -16,6 +16,7 @@ type State = {
 
 type Actions = {
   loadLationData: () => Promise<void>
+  subscribeRealtime: () => () => void
 
   addTalent: (t: Omit<Talent, 'id' | 'created_at' | 'updated_at'>) => void
   updateTalent: (id: string, patch: Partial<Talent>) => void
@@ -62,6 +63,7 @@ function normalizeTalent(t: TalentInput): TalentInput {
     phone: emptyToNull(t.phone),
     timezone: emptyToNull(t.timezone),
     cv_url: emptyToNull(t.cv_url),
+    linkedin_url: emptyToNull(t.linkedin_url),
     available_from: emptyToNull(t.available_from),
     created_by: emptyToNull(t.created_by),
     preferred_salary_min: t.preferred_salary_min ?? null,
@@ -148,6 +150,34 @@ export const useLationStore = create<State & Actions>()((set) => {
       } catch (error) {
         fail(error)
       }
+    },
+
+    subscribeRealtime: () => {
+      const supabase = getSupabase()
+      const channel = supabase
+        .channel('lation-realtime')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'talents' }, async () => {
+          const { data } = await supabase.from('talents').select('*').order('created_at', { ascending: false })
+          if (data) set({ talents: data })
+        })
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'employers' }, async () => {
+          const { data } = await supabase.from('employers').select('*').order('created_at', { ascending: false })
+          if (data) set({ employers: data })
+        })
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'positions' }, async () => {
+          const { data } = await supabase.from('positions').select('*').order('created_at', { ascending: false })
+          if (data) set({ positions: data })
+        })
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'applications' }, async () => {
+          const { data } = await supabase.from('applications').select('*').order('created_at', { ascending: false })
+          if (data) set({ applications: data })
+        })
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'placements' }, async () => {
+          const { data } = await supabase.from('placements').select('*').order('created_at', { ascending: false })
+          if (data) set({ placements: data })
+        })
+        .subscribe()
+      return () => { void supabase.removeChannel(channel) }
     },
 
     addTalent: (t) => {

@@ -1,4 +1,4 @@
-export type TalentStatus = 'available' | 'in_process' | 'placed' | 'inactive'
+export type TalentStatus = 'prospect' | 'available' | 'in_process' | 'placed' | 'inactive'
 export type TalentLevel = 'junior' | 'mid' | 'senior' | 'lead' | 'architect'
 export type EmploymentType = 'full_time' | 'part_time' | 'contract' | 'freelance'
 
@@ -15,6 +15,7 @@ export type Talent = {
   years_of_experience: number
   specialization: string
   cv_url?: string | null
+  linkedin_url?: string | null
   available_from?: string | null
   employment_type: EmploymentType
   preferred_salary_min?: number | null

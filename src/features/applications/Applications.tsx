@@ -10,6 +10,18 @@ import { Textarea } from '../../components/ui/textarea'
 import { EmptyState } from '../../components/shared/EmptyState'
 import { useLationStore } from '../../store/useLationStore'
 import type { Application, ApplicationStatus } from '../../types/lation'
+import {
+  DndContext,
+  DragOverlay,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  useDroppable,
+  useDraggable,
+  type DragEndEvent,
+  type DragStartEvent,
+} from '@dnd-kit/core'
+import toast from 'react-hot-toast'
 
 const COLUMNS: { status: ApplicationStatus; label: string; color: string }[] = [
   { status: 'applied', label: 'Applied', color: 'bg-slate-100 dark:bg-slate-800' },
@@ -28,6 +40,36 @@ const STATUS_DOT: Record<ApplicationStatus, string> = {
   offer_sent: 'bg-blue-500',
   accepted: 'bg-emerald-500',
   rejected: 'bg-red-400',
+}
+
+function DroppableColumn({ id, children, className }: { id: string; children: React.ReactNode; className?: string }) {
+  const { setNodeRef, isOver } = useDroppable({ id })
+  return (
+    <div
+      ref={setNodeRef}
+      className={`${className} transition-colors ${isOver ? 'ring-2 ring-orange-400 ring-inset' : ''}`}
+    >
+      {children}
+    </div>
+  )
+}
+
+function DraggableCard({ id, children }: { id: string; children: React.ReactNode }) {
+  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({ id })
+  const style = transform ? {
+    transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
+  } : undefined
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={`touch-none ${isDragging ? 'opacity-40' : ''}`}
+      {...listeners}
+      {...attributes}
+    >
+      {children}
+    </div>
+  )
 }
 
 type Form = Omit<Application, 'id' | 'created_at' | 'updated_at'>
@@ -52,6 +94,31 @@ export function Applications() {
   const [editing, setEditing] = useState<Application | null>(null)
   const [confirmDelete, setConfirmDelete] = useState<Application | null>(null)
   const [form, setForm] = useState<Form>(empty())
+  const [activeId, setActiveId] = useState<string | null>(null)
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: { distance: 8 },
+    })
+  )
+
+  const activeApp = activeId ? applications.find((a) => a.id === activeId) : null
+
+  function handleDragStart(event: DragStartEvent) {
+    setActiveId(event.active.id as string)
+  }
+
+  function handleDragEnd(event: DragEndEvent) {
+    const { active, over } = event
+    setActiveId(null)
+    if (!over) return
+    const newStatus = over.id as ApplicationStatus
+    const app = applications.find((a) => a.id === active.id)
+    if (app && app.status !== newStatus) {
+      updateApplication(app.id, { status: newStatus })
+      toast.success(`Moved to ${newStatus.replace('_', ' ')}`)
+    }
+  }
 
   const talentMap = Object.fromEntries(talents.map((t) => [t.id, t]))
   const positionMap = Object.fromEntries(positions.map((p) => [p.id, p]))
@@ -137,26 +204,39 @@ export function Applications() {
 
         {viewMode === 'kanban' ? (
           <div className="flex-1 overflow-x-auto px-6 pb-6">
-            <div className="flex gap-4 h-full" style={{ minWidth: `${COLUMNS.length * 240}px` }}>
-              {COLUMNS.map((col) => {
-                const colApps = filtered.filter((a) => a.status === col.status)
-                return (
-                  <div key={col.status} className="flex flex-col w-56 flex-shrink-0">
-                    <div className="flex items-center justify-between mb-3">
-                      <span className="text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wide">{col.label}</span>
-                      <span className="text-xs text-slate-400 dark:text-slate-500">{colApps.length}</span>
+            <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+              <div className="flex gap-4 h-full" style={{ minWidth: `${COLUMNS.length * 240}px` }}>
+                {COLUMNS.map((col) => {
+                  const colApps = filtered.filter((a) => a.status === col.status)
+                  return (
+                    <div key={col.status} className="flex flex-col w-56 flex-shrink-0">
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wide">{col.label}</span>
+                        <span className="text-xs text-slate-400 dark:text-slate-500">{colApps.length}</span>
+                      </div>
+                      <DroppableColumn id={col.status} className={`flex-1 rounded-xl p-3 space-y-2.5 overflow-y-auto ${col.color}`}>
+                        {colApps.length === 0 ? (
+                          <p className="text-xs text-slate-400 dark:text-slate-600 text-center py-4">Empty</p>
+                        ) : (
+                          colApps.map((a) => (
+                            <DraggableCard key={a.id} id={a.id}>
+                              <AppCard a={a} />
+                            </DraggableCard>
+                          ))
+                        )}
+                      </DroppableColumn>
                     </div>
-                    <div className={`flex-1 rounded-xl p-3 space-y-2.5 overflow-y-auto ${col.color}`}>
-                      {colApps.length === 0 ? (
-                        <p className="text-xs text-slate-400 dark:text-slate-600 text-center py-4">Empty</p>
-                      ) : (
-                        colApps.map((a) => <AppCard key={a.id} a={a} />)
-                      )}
-                    </div>
+                  )
+                })}
+              </div>
+              <DragOverlay>
+                {activeApp ? (
+                  <div className="rotate-2 scale-105 opacity-90 shadow-xl">
+                    <AppCard a={activeApp} />
                   </div>
-                )
-              })}
-            </div>
+                ) : null}
+              </DragOverlay>
+            </DndContext>
           </div>
         ) : (
           <div className="flex-1 overflow-y-auto px-6 pb-6">
